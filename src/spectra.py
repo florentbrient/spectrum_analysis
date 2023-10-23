@@ -3,7 +3,8 @@
 """
 Created on Fri Oct 20 16:24:39 2023
 
-@author: Pierre-Etienne Brilouet , fbrient
+@author: Pierre-Etienne Brilouet 
+Modification fbrient
 """
 import numpy as np
 from matplotlib import pyplot as plt
@@ -117,9 +118,9 @@ def plot_spectra(k_v,yall,fig_name2,yfit=None,ystd=None):
     
     # legends
     lines = plt.gca().get_lines()
-    print(lines)
+    #print(lines)
     include = [0]
-    print('lines ',[lines[i].get_label() for i in [0]])
+    #print('lines ',[lines[i].get_label() for i in [0]])
     
     title   = r'$\mathbf{Vertical \, velocity}$'
     legend1 = plt.legend([lines[i] for i in include],[lines[i].get_label() for i in include],
