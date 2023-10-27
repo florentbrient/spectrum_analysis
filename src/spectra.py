@@ -8,14 +8,36 @@ Modification fbrient
 """
 import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.colors import BoundaryNorm
 import plot_tools
 
-
+####
 # Tool box to plot spectra
+#####
+
+# Write some text on figure
+def fmt(x):
+    s = f"{x:.1f}"
+    if s.endswith("0"):
+        s = f"{x:.0f}"
+    return rf"{s}zi" if plt.rcParams["text.usetex"] else f"{s}zi"
+
 
 # secondary axis with lambda
 def lamb2k(x):
     return 2*np.pi/x
+
+def savefig(fig,ax,pathfig,title='',fts=16,xsize=(4,5),zmax=None,dpi=1000,quality=95,makepdf=False):
+    plt.xticks(size=fts)
+    plt.yticks(size=fts)
+    fig.set_size_inches(xsize)
+    print(pathfig,title)
+    fig.savefig(pathfig+title+'.png')#,dpi='figure')
+    if makepdf:
+      fig.savefig(pathfig+title+'.pdf')#,quality=quality)#, dpi=dpi)
+    plt.close()
+    return None
+
 
 #-----------------------------------------------
 # SPECTRUM FUNCTION
@@ -89,7 +111,8 @@ def spectra(data,delta):
 #------------------------------
 # PLOT SPECTRA
 #------------------------------
-def plot_spectra(k_v,yall,fig_name2,yfit=None,ystd=None):
+def plot_spectra(k_v,yall,fig_name2\
+                 ,yfit=None,ystd=None):
     
     # Figure Information
     colors=['Orange','Blue','Red','Purple'] 
@@ -108,10 +131,12 @@ def plot_spectra(k_v,yall,fig_name2,yfit=None,ystd=None):
     plt.plot(k_v,yall,color=colors[0],linewidth=2,label=r'$\mathbf{S - N \;direction}$')
 
     # pentes en -2/3
-    k0 = np.linspace(1e-2,6e-2,1000)*1000.
-    plt.plot(k0,3e-2*k0**(-2/3.),color='gray',linewidth=5,label=r'$\mathbf{k^{-2/3}}$')
+    k0max=k_v.max()
+    k0min=k0max/10
+    #k0 = np.linspace(1e-2,6e-2,1000)#*1000.
+    k0 = np.linspace(k0min,k0max,1000)#*1000.
+    plt.plot(k0,3e-2*k0**(-2/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-2/3}}$')
     #plt.plot(k_v,3e-2*k_v**(-2/3.),color='gray',linewidth=5,label=r'$\mathbf{k^{-2/3}}$')
-
 
     if yfit is not None:
         plt.plot(k_v, yfit, '--',color=colors[0])
@@ -154,3 +179,49 @@ def plot_spectra(k_v,yall,fig_name2,yfit=None,ystd=None):
     plt.tight_layout()
     plt.savefig(fig_name2+'.png')
     return None
+
+
+#------------------------------
+# Plot Length Scale
+#------------------------------
+
+def plot_length(x,y,data,
+                pathfig='./',title='title',\
+                PBLheight=None,cmap0='Blues_r',\
+                xsize = (8,6),fts=16):
+    
+    # Label names
+    labelx='Time (hours)'
+    labely='Altitude (m)'
+    
+    # To modified?
+    levels         = np.arange(0,4,0.1) #[ij for ij in range(0,4,0.1)]
+    levels_contour = np.arange(0,4,1)
+    
+    xx, yy = np.meshgrid(x,y)
+    print(xx.shape,yy.shape,data.shape)
+    # Useful?
+    cmap   = plt.colormaps[cmap0]
+    norm   = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+    
+    # Plot contourf data
+    fig    = plt.figure(); ax    = fig.add_subplot()
+    CS     = plt.pcolormesh(xx,yy,data,cmap=cmap,norm=norm) #vmin=vmin, vmax=vmax)
+    plt.colorbar(CS)
+    CS2    = plt.contour(xx,yy,data,colors='k',linestyles='--',levels=levels_contour)
+    ax.clabel(CS2, CS2.levels, inline=True, fmt=fmt, fontsize=10)
+    
+    # Plot PBL height
+    if PBLheight is not None:
+        plt.plot(x,PBLheight,'r--')
+    
+    ax.set_xlim([0,max(x)])
+        
+    ax.set_xlabel(labelx,fontsize=fts)
+    ax.set_ylabel(labely,fontsize=fts)
+    plt.title(title)
+    savefig(fig,ax,pathfig,title=title,fts=fts,xsize=xsize)
+    
+    del fig,ax
+    return 
+

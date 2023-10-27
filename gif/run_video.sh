@@ -1,8 +1,9 @@
-cas='FIRE' #IHOP
-EXP='F2DNW' #RH04
+cas='IHOP0' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
+EXP='IHOP0' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
 typs=('Mean') #(Mean Anom)
-variables=(SVT006) #(RCT DTHRAD CLDFR THV THT RNPM THLM SVT001 SVT002 SVT003 SVT004 SVT005 SVT006 UT VT WT PABST)
+variables=(SVT004SVT006) #(RCT DTHRAD CLDFR THV THT RNPM THLM SVT001 SVT002 SVT003 SVT004 SVT005 SVT006 UT VT WT PABST)
 #var1D=(LWP LFC LCL)
+joingraph=1
 
 version='V0001' #'V0302_00' #'00' #V0302 #0_0 #default
 
@@ -10,7 +11,7 @@ start=001
 delay=10
 loop=0
 
-path='../figures/'
+path='../figures/'$EXP'/'
 
 # ../figures/SVT004_F2DNW_V0001_720.png
 
@@ -20,8 +21,14 @@ path='../figures/'
 for var in "${variables[@]}"
 do
 
+if [ $joingraph ]
+then
+var=$var'_join'
+fi
+
+
 echo $var
-namefile=${path}'TESTGIF/'$var'_'$EXP'_'$version'_%03d.png'
+namefile=${path}$var'_'$EXP'_'$version'_%03d.png'
 nameanimated=${path}'Animated_'$var'_'$EXP'_'$version'.mp4'
 namegif=$path'GIF_'$var'_'$EXP'_'$version'.gif'
 
@@ -34,7 +41,7 @@ echo '***** MAKE AVI *******'
 #ffmpeg  -f image2 -framerate 1 -pattern_type sequence -start_number $start -i $path/${tt}_$var$char1$char2$cross$char3$version%d.png  -crf 50 -y -vcodec mpeg4 $path/Animated_${tt}_${var}_${cross}$versch.avi
 #ffmpeg  -f image2 -framerate 1 -pattern_type glob -start_number $start -i $namefile  -crf 50 -y -vcodec mpeg4 $nameanimated
 
-ffmpeg  -framerate 30 -i $namefile -crf 10 -level 4.2 -preset slow -vcodec libx264 $nameanimated
+ffmpeg  -framerate 10 -i $namefile -crf 10 -level 4.2 -preset slow -vcodec libx264 $nameanimated
 
 
 echo '***** MAKE GIF *******'

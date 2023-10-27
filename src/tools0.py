@@ -34,13 +34,21 @@ def createrho(T,P):
     rho  = P/(RR*T)
     return rho
 
+def divergence(field, dx, axis=0):
+    "return the divergence of a n-D field"
+    #data3 = np.sum(data2,axis=0)
+    return np.gradient(field, dx, axis=axis)
+
 def createnew(vv,DATA,var1D):
     vc   = {'THLM' :('THT','PABST','RCT'),
+            'DIVUV':('UT',var1D[1]),\
             'RNPM' :('RVT','RCT') }
     [vc.update({ij:('THT','PABST',var1D[0])}) for ij in ['PRW','LWP','Reflectance']]
     
+    tmp = tryopen(vv,DATA)
+
     data = []
-    if vv in vc.keys():
+    if vv in vc.keys() and tmp is None:
         data      = [tryopen(ij,DATA) for ij in vc[vv]]
         if vv == 'THLM':
             #thetal = theta - L/Cp Theta/T Ql
@@ -58,6 +66,13 @@ def createnew(vv,DATA,var1D):
                 #print(tmp)
                 if data[1] is not None: # No clouds
                     tmp += data[1]
+        if vv == 'DIVUV':
+            # DIVUV = DU/DX + DV/DY
+            dx   = data[1][2]-data[1][1]; print(dx)
+            #dy   = data[3][2]-data[3][1]; print(dy)
+            tmpU = divergence(data[0], dx, axis=-1) # x-axis
+            #tmpV = divergence(data[1], dy, axis=-2) # y-axis
+            tmp  = tmpU #+ tmpV
         if vv == 'PRW' or vv == 'LWP' or vv == 'Reflectance':
             TA   = tht2temp(data[0],data[1])
             rho  = createrho(TA,data[1])
@@ -81,8 +96,7 @@ def createnew(vv,DATA,var1D):
                 tmp      = 1.5*tmp/(reff*rho_eau)
                 trans    = 1.0/(1.0+0.75*tmp*(1.0-g))  # Quentin Libois
                 tmp      = 1.-trans
-    else:
-        tmp = None
+
     return tmp
 
 
