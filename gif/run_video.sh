@@ -1,9 +1,8 @@
-cas='IHOP0' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
-EXP='IHOP0' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
+cas='BOMEX2D' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
+EXP='B2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
 typs=('Mean') #(Mean Anom)
-variables=(SVT004SVT006) #(RCT DTHRAD CLDFR THV THT RNPM THLM SVT001 SVT002 SVT003 SVT004 SVT005 SVT006 UT VT WT PABST)
-#var1D=(LWP LFC LCL)
-joingraph=1
+variables=(SVT004WT)
+joingraph=0
 
 version='V0001' #'V0302_00' #'00' #V0302 #0_0 #default
 
@@ -11,7 +10,7 @@ start=001
 delay=10
 loop=0
 
-path='../figures/'$EXP'/'
+path='../figures/'$cas'/'$EXP'/'
 
 # ../figures/SVT004_F2DNW_V0001_720.png
 
@@ -21,7 +20,7 @@ path='../figures/'$EXP'/'
 for var in "${variables[@]}"
 do
 
-if [ $joingraph ]
+if [ $joingraph == 1 ]
 then
 var=$var'_join'
 fi

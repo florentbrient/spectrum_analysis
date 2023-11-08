@@ -16,6 +16,14 @@ import tools0 as tl
 import time
 import plot_tools as pltl
 
+def infocas(model):
+    textcas0={};textcas=None
+    textcas0['BOMEX2D']='2D Meso-NH model (v5.5.1) \nBOMEX (Dx=Dz=25m, Dt=1s)'
+    if model in textcas0.keys():
+        textcas=textcas0[model]
+    print('textcas ',model,textcas)
+    return textcas
+
 def mkdir(path):
    try:
      os.mkdir(path)
@@ -43,20 +51,63 @@ def variance(tmp):
 def skewness(tmp):
     return st.skew(tmp)
 
-def findlevels(var1c):
+def findlevels(var):
     levels = {}; tmp=None
     levels['SVT004']=[0,9,0.1]
     levels['SVT005']=[0,400,10]
     levels['SVT006']=[0,200,5]
     levels['RVT']   =[4,12,0.1]
-    levels['WT']    =[-2.5,2.5,0.1]
+    levels['WT']    =[-2.,2.,0.05]
     levels['DIVUV'] =[-0.04,0.04,0.005]
-    if var1c in levels.keys():
-        tmp0  = levels[var1c]
+    levels['RVT']   =[0,17,1]
+    levels['RCT']   =[0,1,0.05]
+    if var in levels.keys():
+        tmp0  = levels[var]
         tmp   = np.arange(tmp0[0],tmp0[1],tmp0[2])
         if len(tmp0)>3:
             tmp = np.append(tmp0[3],tmp)
     return tmp
+
+def findunits(fl_dia,var):
+    try:
+        units=fl_dia[var].units
+    except:
+        units = '-'
+        pass
+    if var in ('RVT','RNPM','RCT'):
+        units='g/kg'
+    elif var in ('THLM','THV','THT'):
+        units='K'
+    elif var in ('WT'):
+        units='m/s'
+    return units
+
+def findname(var):
+    varname=var;varname0={}
+    varname0['RVT']='Specific humidity'
+    varname0['RNPM']='Total humidity'
+    varname0['RCT']='Liquid water content'
+    varname0['SVT004']='Surface-emitted tracer'
+    varname0['SVT005']='Cloud-base tracer'
+    varname0['SVT006']='Cloud-top or PBL-top tracer'
+    varname0['WT']='Vertical velocity'
+    if var in varname0.keys():
+        varname=varname0[var]
+    return varname
+
+# def findinfos(fl_dia,var):
+    
+#     if var in fl_dia.variables:
+#         units=fl_dia[var].units
+#         varname=fl_dia[var].standard_name
+#     if var in ('RVT','RNPM','RCT'):
+#         units='g/kg'
+#     elif var in ('THLM','THV'):
+#         units=fl_dia['THT'].units
+#         varname=var
+#     return units,varname
+        
+    
 
 def findextrema(model):
     zminmax = None
@@ -82,9 +133,11 @@ def plot2D(data,x,y,filesave
            ,labelx='Undef',labely='Undef',zminmax=None
            ,cmap='Blues_r',fts=18,size=[18.0,12.0]
            ,levels=None,RCT=None,idx_zi=None
-           ,data2=None,var2c=None,title2='Title 2'
-           ,timech=None,joingraph=False):
+           ,data2=None,var2c=None
+           ,timech=None,joingraph=False
+           ,textcas=None):
     
+
     #fig   = plt.figure()
     if var2c is not None and not joingraph:
         fig, ax = plt.subplots(2, 1, sharex=True, sharey=True)
@@ -94,6 +147,9 @@ def plot2D(data,x,y,filesave
         size    = [18.0,7.0]
         #ax    = fig.add_subplot(111)
     #print(ax)
+    sign   = True
+    signature = '$\it{Florent\ Brient}$'
+    
     levels = findlevels(var1c)
     cmap   = findcmap(var1c)
     for ij in np.arange(len(ax)):
@@ -119,7 +175,7 @@ def plot2D(data,x,y,filesave
         #fig.set_size_inches(15.0, 6.5) #width, height
         
         if RCT is not None:
-            ax[ij].contour(x,y,RCT,levels=[0.01],colors='k',linewidths=2.0,linestyles='dotted')
+            ax[ij].contour(x,y,RCT,levels=[0,0.01],colors='k',linewidths=2.0,linestyles='dotted')
     
         if idx_zi is not None:
             ax[ij].axhline(y=zi[0,idx_zi],color='k',linewidth=1.0,linestyle='--')
@@ -131,12 +187,19 @@ def plot2D(data,x,y,filesave
         #ax[ij].tick_params(axis='x', labelsize=fts)
         ax[ij].tick_params(axis='both', labelsize=fts)
         
+        ax[ij].set_title(title[ij],fontsize=fts)
 
         #plt.xticks(size=fts)
         #plt.yticks(size=fts)
     
     if timech is not None:
-        plt.text(0.02,0.9,timech, fontsize=22, transform=plt.gcf().transFigure)
+        #timech=r"$\bf{"+timech+"}$"
+        plt.text(0.7,0.93,timech, fontsize=22, transform=plt.gcf().transFigure\
+                 ,color='red')
+    if textcas is not None:
+        plt.text(0.02,0.92,textcas, fontsize=18, transform=plt.gcf().transFigure)
+    if sign:
+        plt.text(0.85,0.05,signature, fontsize=16, transform=plt.gcf().transFigure)
         
     fig.set_size_inches(size[0], size[1])
     fig.savefig(filesave + '.png')
@@ -155,22 +218,24 @@ def plot2D(data,x,y,filesave
 
 
 path0 = '/home/fbrient/MNH/'
-model = 'FIRE2Dreal'
+#model = 'FIRE2Dreal'
 #model = 'IHOP2D'
-#model = 'BOMEX2D'
+model = 'BOMEX2D'
 #model = 'IHOP2DNW'
 file0 = 'EXP.1.VTIME.OUT.TTIME.nc'
 VTIME = 'V0001'
 
 if model == 'FIRE2Dreal':
     EXP   = 'FIR2D'
-    #EXP   = 'F2DNW'
+    EXP   = 'F2DNW'
+    #EXP   = 'F2DBI'
+    VTIME = 'V0001'
 elif model == 'IHOP2D':
     EXP   = 'IHOP0'
 elif model == 'IHOP2DNW':
     EXP   = 'IHOP2'
 elif model == 'BOMEX2D':
-    #EXP   = 'Ru0x0'
+    #EXP   = 'BOM2D'
     EXP   = 'B2DNW'
     VTIME = 'V0001'
 
@@ -186,22 +251,22 @@ var1c  = 'SVT004'
 
 var2   = None
 var2c  = None
-var2c  = 'SVT006'
+var2c  = 'WT'
 
 varall  = ''.join([var1c,var2c]) if var2c is not None else var1c
 varall2 = varall
 
 # Time
 #hours = np.arange(1,840,1)
-hours = np.arange(400,440,1)
-#hours = np.arange(1,718,1)
+#hours = np.arange(400,440,1)
+hours = np.arange(1,720,1)
 
 
 # Choices
 makefigures=1
 pltcloud=True
 pltspectra=False
-joingraph=True
+joingraph=False
 if joingraph:
     varall2=varall+'_join'
 
@@ -222,7 +287,10 @@ inv       = 'THLM'
 offset    = 0.25
     
 # Save figures
-pathsave0="../figures/"+EXP+"/"
+textcas=infocas(model)
+pathsave0="../figures/"+model+"/"
+mkdir(pathsave0)
+pathsave0=pathsave0+EXP+"/"
 mkdir(pathsave0)
 filesave0=pathsave0+'_'.join([varall2,EXP,VTIME])+'_TTIME'
 filesptr0=pathsave0+'spectra_'+'_'.join([varall,EXP,VTIME]) \
@@ -234,6 +302,10 @@ for ih,hour in enumerate(hours):
     filesptr1 = filesptr0.replace('TTIME','{0:03}'.format(hour))
     print(file)
     fl_dia = nc.Dataset(file, 'r' )
+    
+    title=[findname(var1c)+' ('+findunits(fl_dia,var1c)+')']
+    if var2c is not None:
+        title+=[findname(var2c)+' ('+findunits(fl_dia,var2c)+')']
     
     if ih==0:
         # Open dims
@@ -295,13 +367,14 @@ for ih,hour in enumerate(hours):
         filesave = filesave0.replace('TTIME','{0:03}'.format(hour))
         RCT=None
         if pltcloud and ('RCT' in fl_dia.variables):
-            RCT = ajax(fl_dia['RCT'][:].squeeze().T,of=1000.)        
+            RCT = ajax(fl_dia['RCT'][:].squeeze().T,of=1000.)    
         fig,ax   = plot2D(var.T,xi,zi,filesave,
-                          var1c=var1c,title=var1c,zminmax=zminmax,
+                          var1c=var1c,title=title,zminmax=zminmax,
                           labelx='x (km)',labely='z (km)',
                           RCT=RCT,idx_zi=idxzi[ih],
-                          data2=var2.T,var2c=var2c,title2=var2c,
-                          timech=timech,joingraph=joingraph)
+                          data2=var2.T,var2c=var2c,
+                          timech=timech,joingraph=joingraph,
+                          textcas=textcas)
         #plt.contourf(xi,zi,var.T)
         #plt.show()
         
