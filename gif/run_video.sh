@@ -1,8 +1,14 @@
-cas='BOMEX2D' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
-EXP='B2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
-typs=('Mean') #(Mean Anom)
-variables=(SVT004WT)
+cas='IHOP2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
+EXP='IHOP2' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
+typs=('Anom') #(Mean Anom)
+vars=('WT' 'THV')
 joingraph=0
+
+
+for var in "${vars[@]}";do
+   varch+="$var"
+done
+echo $varch
 
 version='V0001' #'V0302_00' #'00' #V0302 #0_0 #default
 
@@ -10,21 +16,30 @@ start=001
 delay=10
 loop=0
 
-path='../figures/'$cas'/'$EXP'/'
+path='../figures/2D/'$cas'/'$EXP'/'
 
-# ../figures/SVT004_F2DNW_V0001_720.png
+# ../figures/2D/IHOP2DNW/IHOP2/SVT006SVT004_join
+# SVT004SVT006_join_IHOP2_V0001_720.png
 
-#for tt in "${typs[@]}"
-#do
-
-for var in "${variables[@]}"
+for tt in "${typs[@]}"
 do
+
+ch=''
+if [ $tt == 'Anom' ]
+then
+ch=$ch'_anom'
+fi
+
+#for var in "${varch[@]}"
+#do
 
 if [ $joingraph == 1 ]
 then
-var=$var'_join'
+ch=$ch'_join'
 fi
 
+var=$varch$ch
+path=$path$var'/'
 
 echo $var
 namefile=${path}$var'_'$EXP'_'$version'_%03d.png'

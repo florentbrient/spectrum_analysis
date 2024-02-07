@@ -1,0 +1,182 @@
+textcas  IHOP2DNW 2D Meso-NH model (v5.5.1) 
+IHOP Clear sky No Winds (Dx=Dz=25m, Dt=1s)
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.001.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 5.213 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  25.5
+Wstar =  0 nan
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.0365
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.002.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 5.328 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  36.5
+Wstar =  1 nan
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.048
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.003.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 4.255 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  36.5
+Wstar =  2 nan
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.048
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.004.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 4.435 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  36.5
+Wstar =  3 nan
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.048
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.005.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 4.332 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  36.5
+Wstar =  4 5.4902065281469104e-05
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.048
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.006.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 4.121 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  36.5
+Wstar =  5 0.0001699911153150954
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.048
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.007.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 5.775 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  36.5
+Wstar =  6 0.00015314988243223557
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.048
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.008.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 4.194 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  36.5
+Wstar =  7 0.00016542344215463064
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.048
+/home/fbrient/MNH/IHOP2DNW/IHOP2.1.V0001.OUT.009.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+len  2
+Find PBL function took 6.254 ms
+Error in opening  THV
+Error in opening  RCT
+Error in opening  Wstar
+Error in opening  RCT
+Error in opening  THV
+Error in opening  RCT
+PBL top  48.0
+Wstar =  8 0.00019645397818282242
+(512, 134) (512, 134) (512, 134)
+(512, 134) (512, 134) (512, 134)
+NX,NS:  512 255
+**** PBL height zi:  0.06
+*** The program tooks 8.143 s
+<class 'netCDF4._netCDF4.Dataset'>
+root group (NETCDF4_CLASSIC data model, file format HDF5):
+    dimensions(sizes): 
+    variables(dimensions): 
+    groups: 
+('xy', <class 'netCDF4._netCDF4.Dimension'>: name = 'xy', size = 2)
+('time', <class 'netCDF4._netCDF4.Dimension'>: name = 'time', size = 4)
+('level', <class 'netCDF4._netCDF4.Dimension'>: name = 'level', size = 134)
+('timeall', <class 'netCDF4._netCDF4.Dimension'>: name = 'timeall', size = 9)
+File: ../data/data2D_IHOP2DNW_IHOP2_WT_s02_p40.nc
+units  ('xy', 'time', 'level')
+units  ('xy', 'time', 'level')
+units  time
+units  ('timeall', 'level')
+units  ('timeall', 'level')
+(134, 4) (134, 4) (134, 4)
+./ title
