@@ -17,25 +17,29 @@ plt.style.use('classic')
 #####
 
 # Write some text on figure
-def fmt(x):
+def fmt(x,t='zi'):
     s = f"{x:.1f}"
     if s.endswith("0"):
         s = f"{x:.0f}"
-    return rf"{s}zi" if plt.rcParams["text.usetex"] else f"{s}zi"
+    return rf"{s}"+t if plt.rcParams["text.usetex"] else f"{s}"+t
 
 
 # secondary axis with lambda
 def lamb2k(x):
     return 2*np.pi/x
 
-def savefig(fig,ax,pathfig,title='',fts=16,xsize=(4,5),zmax=None,dpi=1000,quality=95,makepdf=False):
+def savefig(fig,pathfig='./'\
+            ,namefig='namefig'\
+            ,fts=16,xsize=(4,5),zmax=None\
+            ,dpi=1000,quality=95,makepdf=False):
+    
     plt.xticks(size=fts)
     plt.yticks(size=fts)
     fig.set_size_inches(xsize)
-    print(pathfig,title)
-    fig.savefig(pathfig+title+'.png')#,dpi='figure')
+    print(pathfig,namefig)
+    fig.savefig(pathfig+namefig+'.png')#,dpi='figure')
     if makepdf:
-      fig.savefig(pathfig+title+'.pdf')#,quality=quality)#, dpi=dpi)
+      fig.savefig(pathfig+namefig+'.pdf')#,quality=quality)#, dpi=dpi)
     plt.close()
     return None
 
@@ -122,7 +126,7 @@ def plot_spectra(k_v,y1a,fig_name2\
                  ,y1b=None,y1bfit=None
                  ,y2a=None,y2afit=None
                  ,y2b=None,y2bfit=None
-                 ,infoch=None,zi=None):
+                 ,infoch=None,zi=None,zmax=None):
     
     # Information for plotting
     # infoch : level (zz),
@@ -136,6 +140,7 @@ def plot_spectra(k_v,y1a,fig_name2\
     spines = ['left', 'bottom','top','right']
     largeur_fig = 35. # en cm
     hauteur_fig = 22. # en cm
+    xsize  = (15,10)
     
     # Start figure
     fig = plt.figure(fig_name2,figsize= (0.39370*largeur_fig,0.39370*hauteur_fig),facecolor='white',dpi=None)
@@ -146,20 +151,21 @@ def plot_spectra(k_v,y1a,fig_name2\
     if y1b is not None:
         ax.plot(k_v,y1b,color=colors[1],linewidth=2,label=r'$\mathbf{S - N \;direction}$')
         
-
-    # pentes en -2/3
-    k0max=k_v.max()
-    k0min=k0max/10
-    #k0 = np.linspace(1e-2,6e-2,1000)#*1000.
-    k0 = np.linspace(k0min,k0max,1000)#*1000.
-    ax.plot(k0,k0**(-2/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-2/3}}$')
-    #plt.plot(k_v,3e-2*k_v**(-2/3.),color='gray',linewidth=5,label=r'$\mathbf{k^{-2/3}}$')
-
     if y1afit is not None:
         ax.plot(k_v, y1afit, '--',color=colors[0])
     if y1bfit is not None:
         ax.plot(k_v, y1bfit, '--',color=colors[1])
     
+    # pentes en -2/3
+    k0max=k_v.max()
+    k0min=k0max/10
+    #k0 = np.linspace(1e-2,6e-2,1000)#*1000.
+    k0scale = 3e-2
+    k0 = np.linspace(k0min,k0max,1000)#*1000.
+    ax.plot(k0,k0scale*k0**(-2/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-2/3}}$')
+    
+    #plt.plot(k_v,3e-2*k_v**(-2/3.),color='gray',linewidth=5,label=r'$\mathbf{k^{-2/3}}$')
+
     # legends
     lines = plt.gca().get_lines()
     #print(lines)
@@ -169,21 +175,35 @@ def plot_spectra(k_v,y1a,fig_name2\
     namevar = infoch[1]
     title   = r'$\mathbf{{namevar}}$'.replace('namevar',namevar)
     legend1 = plt.legend([lines[i] for i in include],[lines[i].get_label() for i in include],
-                         title=title,shadow=True,numpoints=1,loc=2,bbox_to_anchor=(1.,0.9),
+                         title=title,shadow=True,numpoints=1,loc=2,bbox_to_anchor=(1.,0.85),
                          fontsize=15,title_fontsize=20)
 #    legend2 = plt.legend([lines[i] for i in [1,3]],[lines[i].get_label() for i in include],
 #                         title=r'$\mathbf{{namevar}}$'.replace('namevar',namevar),shadow=True,numpoints=1,loc=2,bbox_to_anchor=(1.,0.7),
 #                         fontsize=15,title_fontsize=20)
+
     plt.gca().add_artist(legend1)
     zchar = '{:0.2}'.format(infoch[0])
+    if zi is not None:
+        zichar =  '{:0.2}'.format(zi)
+        plt.text(1.05,1.05,r'$\mathbf{PBL = {s1} \,km}$'.replace('s1', zichar),
+                 fontsize=20,transform=ax.transAxes)
     plt.text(1.05,0.95,r'$\mathbf{z = {s1} \,km}$'.replace('s1', zchar),fontsize=20,
              transform=ax.transAxes)
+    if zmax is not None:
+        zmaxchar =  '{:0.2}'.format(zmax)
+        plt.text(1.05,0.90,r'$\mathbf{z_{max} = {s1} \,km}$'.replace('s1', zmaxchar),
+                 fontsize=20,transform=ax.transAxes)
+        
     #---
     plot_tools.adjust_spines(ax, spines,width_spines)
+
     xstring = r'$\mathbf{k \;(rad.km^{-1})}$'
     ystring = r'$\mathbf{k \times S_{w}\!(k)/ \sigma_{w}^2}$'
     plot_tools.legend_fig(xstring,ystring,size_leg,size_ticks)
-    plt.ylim(bottom=5e-3)
+    
+    plt.ylim(top=5e-1)
+    plt.ylim(bottom=1e-6)
+
     plt.yscale('log')
     plt.xscale('log')
     plt.grid(b=1, which='both', axis='both')
@@ -201,10 +221,12 @@ def plot_spectra(k_v,y1a,fig_name2\
     # PBL height
     if zi is not None:
         ki=2*np.pi/zi
-        plt.axvline(x=ki,color="grey",linestyle='--')
+        ax.axvline(x=ki,color="grey",linestyle='--')
     
     plt.tight_layout()
-    plt.savefig(fig_name2+'.png')
+    #plt.savefig(fig_name2+'.png')
+    savefig(fig,pathfig='',namefig=fig_name2\
+            ,xsize=xsize)
     return None
 
 
@@ -213,13 +235,15 @@ def plot_spectra(k_v,y1a,fig_name2\
 #------------------------------
 
 def plot_length(x,y,data,
-                pathfig='./',title='title',\
-                PBLheight=None,cmap0='Blues_r',\
+                pathfig='./',namefig='namefig',\
+                title='title',zminmax=None,\
+                PBLheight=None,relzi=False,\
+                cmap0='Blues_r',\
                 xsize = (8,6),fts=16):
     
     # Label names
     labelx='Time (hours)'
-    labely='Altitude (m)'
+    labely='Altitude (km)'
     
     # To modified?
     levels         = np.arange(0,4,0.1) #[ij for ij in range(0,4,0.1)]
@@ -236,18 +260,25 @@ def plot_length(x,y,data,
     CS     = plt.pcolormesh(xx,yy,data,cmap=cmap,norm=norm) #vmin=vmin, vmax=vmax)
     plt.colorbar(CS)
     CS2    = plt.contour(xx,yy,data,colors='k',linestyles='--',levels=levels_contour)
-    ax.clabel(CS2, CS2.levels, inline=True, fmt=fmt, fontsize=10)
+
+    #ax.clabel(CS2, CS2.levels, inline=True, fmt=fmt, fontsize=10)
+    t = 'zi' if relzi else ''
+    fmt0=lambda x: f'{x:.0f}'+t
+    ax.clabel(CS2, CS2.levels, inline=True, fontsize=10, fmt=fmt0)
+    
     
     # Plot PBL height
     if PBLheight is not None:
-        plt.plot(x,PBLheight,'r--')
+        ax.plot(x,PBLheight,'r--')
     
     ax.set_xlim([0,max(x)])
-        
+    if zminmax is not None:
+        ax.set_ylim(zminmax)
+    
     ax.set_xlabel(labelx,fontsize=fts)
     ax.set_ylabel(labely,fontsize=fts)
     plt.title(title)
-    savefig(fig,ax,pathfig,title=title,fts=fts,xsize=xsize)
+    savefig(fig,pathfig=pathfig,namefig=namefig,fts=fts,xsize=xsize)
     
     del fig,ax
     return 

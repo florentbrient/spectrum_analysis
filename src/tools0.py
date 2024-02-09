@@ -8,8 +8,10 @@ Created on Mon Oct 23 16:52:24 2023
 import numpy as np
 import Constants as CC
 from scipy import integrate
+import netCDF4 as nc
 from netCDF4 import Dataset
 import gc
+
 
 
 def resiz(tmp): # should be removed by pre-treatment
@@ -122,21 +124,34 @@ def createnew(vv,DATA,var1D,idxzi=None):
             # W_star = g*zi*H0/theta_v(0-zi) #First version
             # Deardroff velocity
             # W_star = (g/T_v * zi * (w'th_v')_surf)^1/3
+            # 'Wstar':('WT','RVT','RCT','PABST',var1D[0])
             WT  = data[0]
+            print('Check wstar')
+            print(WT.shape) # alt,y,x ou alt,x
             THV = createnew('THV',DATA,var1D)
             TV  = tht2temp(THV,data[3])
-            ss  = THV.shape 
+            #print(THV[0,15],TV[0,15])
+            ss  = WT.shape 
             if len(ss)==3:
-                WT  = np.shape(WT,(ss[0],ss[1]*ss[2]))
+                WT  = np.reshape(WT,(ss[0],ss[1]*ss[2]))
                 THV = np.reshape(THV,(ss[0],ss[1]*ss[2]))
                 TV  = np.reshape(TV,(ss[0],ss[1]*ss[2]))
-            wthv=WT[0,:]*(THV[0,:]-np.nanmean(TV[0,:])) #surface
-            wthv=np.nanmean(wthv)
+            zz   = data[4]
+            wthv = 0.
+            for ij,zz1 in enumerate(zz):
+                tmp  = WT[ij,:]*(THV[ij,:]-np.nanmean(THV[ij,:]))
+                wthv = max(wthv,np.nanmean(tmp))
+                #print(ij,zz1,wthv)
+            
+            #wthv=WT[0,:]*(THV[0,:]-np.nanmean(THV[0,:])) #surface
+            #print(THV[0,:]-np.nanmean(THV[0,:]))
+            #wthv=np.nanmean(wthv)
             if idxzi is not None:
-                zz = data[4]
                 print('PBL top ',zz[idxzi])
                 tmp=CC.RG*zz[idxzi]*wthv/np.nanmean(TV[0:idxzi,:])
+                #print(CC.RG,zz[idxzi],wthv,np.nanmean(TV[0:idxzi,:]))
                 tmp=pow(tmp,1./3.)
+            print('tmp ',tmp)
     return tmp
 
 
@@ -215,3 +230,23 @@ def writenetcdf(file_netcdf,data_dims,data
         tmp[:]   = data[key]
     
     ncfile.close()
+    
+def opennetcdf(file_netcdf,datach):
+    # Open or create file
+    # Needed variables: 
+    # hourspectra,level,hours
+    # lambda_max,lambda_fit,PBLspectra
+    # skew,
+
+    ncfile = nc.Dataset(file_netcdf, 'r' )
+    hourspectra = ncfile['time'][:]
+    hours       = ncfile['timeall'][:]
+    level       = ncfile['level'][:]
+
+    data={}
+    for ij in datach:
+        data[ij] =ncfile[ij][:]
+
+    del ncfile
+
+    return hourspectra,level,hours,data
