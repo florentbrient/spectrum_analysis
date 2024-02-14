@@ -11,6 +11,8 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import BoundaryNorm
 import plot_tools
 plt.style.use('classic')
+from scipy import stats
+
 
 ####
 # Tool box to plot spectra
@@ -43,6 +45,102 @@ def savefig(fig,pathfig='./'\
     plt.close()
     return None
 
+def compute_energy_spectrum(fft_field,size):
+    # Shift zero frequency component to the center
+    fft_shifted = np.fft.fftshift(fft_field)
+
+    # Compute wave numbers
+    size = fft_field.shape[0]
+    kx = np.fft.fftfreq(size, d=1.0/size)
+    ky = np.fft.fftfreq(size, d=1.0/size)
+    kx, ky = np.meshgrid(kx, ky)
+    wave_numbers = np.sqrt(kx**2 + ky**2)
+
+    # Compute Energy Spectrum by radial averaging
+    max_wave_number = np.max(wave_numbers)
+    num_bins = int(size/2)
+    bins = np.linspace(0, max_wave_number, num_bins + 1)
+
+    digitized = np.digitize(wave_numbers.flatten(), bins)
+    energy_spectrum = np.histogram(wave_numbers.flatten(), bins=bins, weights=np.abs(fft_shifted.flatten())**2)[0]
+    energy_spectrum /= np.histogram(wave_numbers.flatten(), bins=bins)[0]
+
+    return bins, energy_spectrum
+
+#-----------------------------------------------
+# 2D SPECTRUM FUNCTION
+#-----------------------------------------------
+def fpsd2D(x,Fs):
+    #xx = np.fft.fft2(x)
+    
+    size = x.shape[0]
+    npix = size
+    # # Perform 2D Fourier Transform
+    # fft_field = np.fft.fft2(x)
+    # # Compute Energy Spectrum
+    # wave_numbers, energy_spectrum = compute_energy_spectrum(fft_field,size)
+    # # Plot the Spectrum
+    # plt.figure(figsize=(8, 6))
+    # plt.loglog(wave_numbers[:-1], energy_spectrum,'b')
+    # plt.xlabel('Wave Number (k)')
+    # plt.ylabel('Energy Spectrum')
+    # plt.title('Turbulent Spectrum with Kolmogorov Cascade')
+    # plt.grid(True)
+    # plt.show()
+    
+    #taking the fourier transform
+    fourier_image = np.fft.fft2(x)
+    
+    #Get power spectral density
+    fourier_amplitudes = np.abs(fourier_image)**2
+    
+    #calculate sampling frequency fs (physical distance between pixels)
+    #fs = 92e-07/npix
+    fs = 1/npix
+
+    #freq_shifted = fs/2 * np.linspace(-1,1,npix)
+    #freq = fs/2 * np.linspace(0,1,int(npix/2))
+    
+    #constructing a wave vector array
+    ## Get frequencies corresponding to signal PSD
+    kfreq = np.fft.fftfreq(npix) * npix
+    kfreq2D = np.meshgrid(kfreq, kfreq)
+    
+    knrm = np.sqrt(kfreq2D[0]**2 + kfreq2D[1]**2)
+    knrm = knrm.flatten()
+    fourier_amplitudes = fourier_amplitudes.flatten()
+    
+    #creating the power spectrum
+    #kbins = np.arange(0.5, npix//2+1, 1.) #original
+    kbins = np.arange(0.5, npix//2, 1.)
+    kvals = 0.5 * (kbins[1:] + kbins[:-1])
+    
+    Abins, _, _ = stats.binned_statistic(knrm, fourier_amplitudes,
+                                         statistic = "mean",
+                                         bins = kbins)
+    Abins *= np.pi * (kbins[1:]**2 - kbins[:-1]**2)
+    
+    f = fs*kvals
+    
+    #print("Plotting power spectrum of surface ...")
+    #plt.figure(figsize=(10, 10))
+    ####plt.loglog(fs/kvals, Abins)
+    #plt.loglog(f, Abins)
+    #plt.xlabel("Spatial Frequency $k$ [meters]")
+    #plt.ylabel("Power per Spatial Frequency $P(k)$")
+    #plt.tight_layout()
+    #plt.show()
+    
+    #stop
+    return f,Abins
+
+
+def spectra2D(data,delta):
+    f_para,SPECTRE_PARA = fpsd2D(data,1)
+    k_para              = 2*np.pi*f_para/delta
+    VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(k_para))
+    spec_log            = k_para*SPECTRE_PARA/VAR_PARA
+    return k_para,SPECTRE_PARA,VAR_PARA,spec_log
 
 #-----------------------------------------------
 # SPECTRUM FUNCTION
@@ -54,7 +152,7 @@ def fpsd(x,Fs):
     tm = N/Fs
     df = 1./tm   
     #print(df)
-    f = np.arange(0,Fs,df) 
+    f = np.arange(0,Fs,df) #f_para
 #calcul fft et PSD
     xx = np.fft.fft(x)
     pxx = np.real(xx*np.conj(xx)/(N**2))
@@ -84,7 +182,6 @@ def fpsd(x,Fs):
     # fs and psx : smoothed freq and spectrum
     return [f,fs,psdx,psx]
 
-
 def spectra(data,delta):
     #------------------------------
     # From VERTICAL VELOCITY SPECTRA
@@ -106,7 +203,7 @@ def spectra(data,delta):
     #    f_para = fpsd(w_para,1)[0]
     #    spectre_para.append(fpsd(w_para,1)[2])
      
-    f_para = fpsd(data,1)[0]
+    f_para       = fpsd(data,1)[0]
     SPECTRE_PARA = fpsd(data,1)[2]
     
     #SPECTRE_PARA = np.mean(spectre_para,axis=0) # one mean work
@@ -126,7 +223,8 @@ def plot_spectra(k_v,y1a,fig_name2\
                  ,y1b=None,y1bfit=None
                  ,y2a=None,y2afit=None
                  ,y2b=None,y2bfit=None
-                 ,infoch=None,zi=None,zmax=None):
+                 ,infoch=None,zi=None,zmax=None
+                 ,labels=[r'$\mathbf{W - E \;direction}$']):
     
     # Information for plotting
     # infoch : level (zz),
@@ -147,50 +245,64 @@ def plot_spectra(k_v,y1a,fig_name2\
     
     ax = fig.add_subplot(111)
     # Mean value
-    ax.plot(k_v,y1a,color=colors[0],linewidth=2,label=r'$\mathbf{W - E \;direction}$')
+    ax.plot(k_v,y1a,color=colors[0],linewidth=2,label=labels[0])
     if y1b is not None:
-        ax.plot(k_v,y1b,color=colors[1],linewidth=2,label=r'$\mathbf{S - N \;direction}$')
+        ax.plot(k_v,y1b,color=colors[1],linewidth=2,label=labels[1])
         
     if y1afit is not None:
         ax.plot(k_v, y1afit, '--',color=colors[0])
     if y1bfit is not None:
         ax.plot(k_v, y1bfit, '--',color=colors[1])
     
-    # pentes en -2/3
     k0max=k_v.max()
     k0min=k0max/10
     #k0 = np.linspace(1e-2,6e-2,1000)#*1000.
-    k0scale = 3e-2
     k0 = np.linspace(k0min,k0max,1000)#*1000.
+    # pentes en -2/3 (k*k^-5/3=k^-2/3)
+    k0scale = 1 #3e-2
     ax.plot(k0,k0scale*k0**(-2/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-2/3}}$')
+    # pentes en -3 (k*k^-3=k^-2)
+    k0scale = 1e2 #3e-2
+    ax.plot(k0,k0scale*k0**(-2),color='gray',linewidth=3,linestyle='-',label=r'$\mathbf{k^{-2}}$')
+
     
     #plt.plot(k_v,3e-2*k_v**(-2/3.),color='gray',linewidth=5,label=r'$\mathbf{k^{-2/3}}$')
 
     # legends
     lines = plt.gca().get_lines()
-    #print(lines)
-    include = [0,1]
-    #print('lines ',[lines[i].get_label() for i in [0]])
+    print(len(lines))
+    include = np.arange(0,len(lines)-2) #[0,1]
+    includeslope = np.arange(len(lines)-2,len(lines))
+    print('lines ',[lines[i].get_label() for i in include])
     
-    namevar = infoch[1]
+    namevar='var';zchar=None
+    if infoch is not None:
+        namevar = infoch[1]
+        zchar = '{:0.2f}'.format(infoch[0])
     title   = r'$\mathbf{{namevar}}$'.replace('namevar',namevar)
     legend1 = plt.legend([lines[i] for i in include],[lines[i].get_label() for i in include],
                          title=title,shadow=True,numpoints=1,loc=2,bbox_to_anchor=(1.,0.85),
+                         fontsize=15,title_fontsize=20)
+    titleslope   = r'$\mathbf{Slopes}$'
+    legend2 = plt.legend([lines[i] for i in includeslope],[lines[i].get_label() for i in includeslope],
+                         title=titleslope,shadow=True,numpoints=1,loc=2,bbox_to_anchor=(1.,0.65),
                          fontsize=15,title_fontsize=20)
 #    legend2 = plt.legend([lines[i] for i in [1,3]],[lines[i].get_label() for i in include],
 #                         title=r'$\mathbf{{namevar}}$'.replace('namevar',namevar),shadow=True,numpoints=1,loc=2,bbox_to_anchor=(1.,0.7),
 #                         fontsize=15,title_fontsize=20)
 
     plt.gca().add_artist(legend1)
-    zchar = '{:0.2}'.format(infoch[0])
+    plt.gca().add_artist(legend2)
+
     if zi is not None:
-        zichar =  '{:0.2}'.format(zi)
+        zichar =  '{:0.2f}'.format(zi)
         plt.text(1.05,1.05,r'$\mathbf{PBL = {s1} \,km}$'.replace('s1', zichar),
                  fontsize=20,transform=ax.transAxes)
-    plt.text(1.05,0.95,r'$\mathbf{z = {s1} \,km}$'.replace('s1', zchar),fontsize=20,
+    if zchar is not None:
+        plt.text(1.05,0.95,r'$\mathbf{z = {s1} \,km}$'.replace('s1', zchar),fontsize=20,
              transform=ax.transAxes)
     if zmax is not None:
-        zmaxchar =  '{:0.2}'.format(zmax)
+        zmaxchar =  '{:0.2f}'.format(zmax)
         plt.text(1.05,0.90,r'$\mathbf{z_{max} = {s1} \,km}$'.replace('s1', zmaxchar),
                  fontsize=20,transform=ax.transAxes)
         
@@ -201,8 +313,8 @@ def plot_spectra(k_v,y1a,fig_name2\
     ystring = r'$\mathbf{k \times S_{w}\!(k)/ \sigma_{w}^2}$'
     plot_tools.legend_fig(xstring,ystring,size_leg,size_ticks)
     
-    plt.ylim(top=5e-1)
-    plt.ylim(bottom=1e-6)
+    plt.ylim(top=5e0)
+    plt.ylim(bottom=5e-4)
 
     plt.yscale('log')
     plt.xscale('log')
