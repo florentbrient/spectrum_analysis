@@ -17,9 +17,10 @@ import os
 import spectra
 import tools0 as tl
 import time
-from scipy.optimize import curve_fit
+#from scipy.optimize import curve_fit
 #import plot_tools as pltl
 #import gc
+import cloudmetrics as cm
 
 # test speed up savefig
 from PIL import Image
@@ -128,9 +129,9 @@ def findname(var,dash=False):
     varname0['RVT']='Specific humidity'
     varname0['RNPM']='Total humidity'
     varname0['RCT']='Liquid water content'
-    varname0['SVT004']='Surface-emitted tracer'
+    varname0['SVT004']='Surface tracer'
     varname0['SVT005']='Cloud-base tracer'
-    varname0['SVT006']='Cloud-top or PBL-top tracer'
+    varname0['SVT006']='Cloud/PBL-top tracer'
     varname0['WT']='Vertical velocity'
     varname0['THV']='Virtual potential temperature'
     if var in varname0.keys():
@@ -152,7 +153,7 @@ def findname(var,dash=False):
         
 def findextrema(model):
     zminmax = None
-    zmax  = {'FIRE':1, 'BOMEX':2, 'ARMCU':2,'IHOP':2.5}
+    zmax  = {'FIRE':0.8, 'BOMEX':2, 'ARMCU':3,'IHOP':2.5}
     for x in zmax.keys():
         if x in model:
             zminmax=[0,zmax[x]]
@@ -202,7 +203,7 @@ def plot2D(data,x,y,filesave
     if var2c is not None and not joingraph:
         fig, ax = plt.subplots(2, 1, sharex=True, sharey=True,facecolor="white")
     else:
-        fig, ax = plt.subplots(1)
+        fig, ax = plt.subplots(1,facecolor="white")
         ax      = [ax]
         size    = [18.0,8.0]
         fig.tight_layout(rect=[0.05,0.1,1.05,.92])  #def rectangle [0,0,1,1]
@@ -316,15 +317,15 @@ def func(x, a, b, c, d):
 
 # Choices
 # 2D or 3D simualtions
-Dim='3D'
+Dim='2D'
 # Make figures
-makefigures=0
+makefigures=1
 # Plot cloud in makefigures
 pltcloud=True
 # Plot Anomalies
-pltanom=True
+pltanom=False
 # Join graph of var1 and var2
-joingraph=False
+joingraph=True
 # Plot turbulent spectra
 pltspectra=True
 
@@ -337,10 +338,10 @@ if pltanom:
 if Dim=='2D':
     file0 = 'EXP.1.VTIME.OUT.TTIME.nc'
     VTIME = 'V0001'
-    model = 'FIRE2Dreal'
-    #'FIRE2Dreal' #'IHOP2D' , 'BOMEX2D', 'IHOP2DNW','BOMEX2D'
+    model = 'BOMEX2D'
+    #'FIRE2Dreal' #'IHOP2D' , 'BOMEX2D', 'IHOP2DNW','BOMEX2D', 'ARMCU2D'
     T0    = 1
-    TMAX  = 840 #400 #840
+    TMAX  = 500 #400 #840
     if model == 'FIRE2Dreal':
         EXP   = 'FIR2D'
         #EXP   = 'F2DNW'
@@ -356,7 +357,11 @@ if Dim=='2D':
         #EXP   = 'BOM2D'
         EXP   = 'B2DNW'
         VTIME = 'V0001'
-        TMAX  = 718
+        TMAX  = 500
+    elif model == 'ARMCU2D':
+        EXP   = 'Ru0x0'
+        VTIME = 'V0001'
+        TMAX  = 900
     path0 = '/home/fbrient/MNH/'+model+'/'
     hours = np.arange(T0,TMAX,1)
     dt    = 1./60. # minutes 
@@ -369,16 +374,26 @@ elif Dim=='3D':
     VTIME = "V0001"
     model,EXP = "IHOPNW","IHOP0"
     #model,EXP,VTIME = "FIREWIND","WDFor","V0301"
+    model,EXP,VTIME = "FIRE","Ls2x0","V0301"
+    
+    # Simulations from Jean-Zay (new MNH)
+    path='/home/fbrient/GitHub/objects-LES/data/'
+    file0 = 'sel_EXP.1.VTIME.OUT.TTIME.nc'
+    
+    # Old Simulations (from CNRM)
+    #file0 = 'sel_EXP.1.VTIME.OUT.TTIME.nc'
     
     T0,TMAX,DT    = 1,6,1
     if "FIRE" in model:
-       T0,TMAX,DT    = 12,24,3 
+       T0,TMAX,DT    = 3,24,3
+       if EXP=="Ls2x0":
+           file0=file0.replace('OUT.','')
+           file0=file0.replace('.nc','.nc4')
        
     path0 = '/home/fbrient/GitHub/objects-LES/data/'+model+'/'+EXP+'/'
     hours = np.arange(T0,TMAX+DT,DT)
     dt    = 1 # saving each hour
     
-    file0 = 'sel_EXP.1.V0001.OUT.TTIME.nc'
     name_xy = ['W_E_direction','S_N_direction','vertical_levels']
     var1D   = name_xy[::-1]
     # 3D field has properties axis such as
@@ -390,18 +405,20 @@ file0 = file0.replace('VTIME',VTIME)
 file0 = path0+file0
 
 # Variable to study
-var1c  = 'RNPM'
-#var1c  = 'WT'
+#var1c  = 'RNPM'
+var1c  = 'WT'
 #var1c  = 'THV'
 #var1c = 'SVT004'
-#var1c = 'PABST'
+#var1c = 'RCT'
+#var1c = "LWP"
 
 
 var2c  = None
-#var2c  = 'SVT005'
+var2c  = 'SVT004'
 #var2c  = 'THLM'
 #var2c  = 'THV'
 #var2c  = 'WT'
+#var2c  = 'SVT006'
 
 
 varall  = ''.join([var1c,var2c]) if var2c is not None else var1c
@@ -480,13 +497,12 @@ if not isfile:
             ofdim = 1e-3
             ni=ajax(np.array(fl_dia[name_xy[0]][:]),of=ofdim,rmb=rmb)
             nj=ajax(np.array(fl_dia[name_xy[1]][:]),of=ofdim,rmb=rmb)
-            nj_u=ajax(np.array(fl_dia['nj_u'][:]),of=ofdim,rmb=rmb)
-            ni_u=ajax(np.array(fl_dia['ni_u'][:]),of=ofdim,rmb=rmb)
-            ni_v=ajax(np.array(fl_dia['ni_v'][:]),of=ofdim,rmb=rmb)
-            nj_u=ajax(np.array(fl_dia['nj_u'][:]),of=ofdim,rmb=rmb)
-            nj_v=ajax(np.array(fl_dia['nj_v'][:]),of=ofdim,rmb=rmb)
+            #nj_u=ajax(np.array(fl_dia['nj_u'][:]),of=ofdim,rmb=rmb)
+            #ni_u=ajax(np.array(fl_dia['ni_u'][:]),of=ofdim,rmb=rmb)
+            #ni_v=ajax(np.array(fl_dia['ni_v'][:]),of=ofdim,rmb=rmb)
+            #nj_v=ajax(np.array(fl_dia['nj_v'][:]),of=ofdim,rmb=rmb)
             level=ajax(fl_dia[name_xy[2]][:],of=ofdim,rmb=rmb)
-            level_w=ajax(fl_dia['level_w'][:],of=ofdim,rmb=rmb)
+            #level_w=ajax(fl_dia['level_w'][:],of=ofdim,rmb=rmb)
             
             
             delta_x = ni[1]-ni[0]
@@ -511,10 +527,11 @@ if not isfile:
                 lambda_max2D = np.zeros((NHsp,NL))*np.nan
                 lambda_fit2D = np.zeros((NHsp,NL))*np.nan
         
-    
-        timech = fl_dia.variables['time']
-        timech = nc.num2date(timech[:],timech.units,only_use_python_datetimes=False)
-        timech = timech[0].strftime('%Y-%m-%d (%H:%M:%S)')
+        timech = None
+        if 'time' in fl_dia.variables.keys():
+            timech = fl_dia.variables['time']
+            timech = nc.num2date(timech[:],timech.units,only_use_python_datetimes=False)
+            timech = timech[0].strftime('%Y-%m-%d (%H:%M:%S)')
     
         time1     = time.time()
         idxzi[ih] = tl.findpbltop(inv,fl_dia,var1D,offset=offset)
@@ -535,7 +552,7 @@ if not isfile:
         if var2c is not None:
             var2   = tl.createnew(var2c,fl_dia,var1D)
             #var2  = fl_dia[var2c][:].squeeze()
-            var2  = ajax(var2,find_offset(var2c),rmb=rmb).T 
+            var2  = ajax(var2,find_offset(var2c),rmb=rmb) #.T 
     
 
         # Omega star (To remove non-turbulent layer)
@@ -560,17 +577,18 @@ if not isfile:
             if pltanom:
                 varplot=tl.anomcalc(varplot)
                 if varplot2 is not None:
-                    varplot2=tl.anomcalc(varplot2.T).T
+                    varplot2=tl.anomcalc(varplot2) #.T) #.T
                     
             title=[anomch+findname(var1c)+' ('+findunits(fl_dia,var1c)+')']
             if var2c is not None:
                 title+=[anomch+findname(var2c)+' ('+findunits(fl_dia,var2c)+')']
-            fig,ax   = plot2D(var.T,xz,zx,filesave,
+                varplot2= varplot2.T
+            fig,ax   = plot2D(varplot.T,xz,zx,filesave,
                               var1c=var1c,title=title,
                               zminmax=zminmax,Anom=Anom,
                               labelx='x (km)',labely='z (km)',
                               RCT=RCT,idx_zi=idxzi[ih],
-                              data2=var2,var2c=var2c,
+                              data2=varplot2,var2c=var2c,
                               timech=timech,joingraph=joingraph,
                               textcas=textcas)
             #plt.contourf(xi,zi,var.T)
@@ -600,17 +618,22 @@ if not isfile:
         zi = level[idxzi[ih]]
         print('**** PBL height zi: ',zi)
         
-        # Remove non-turbulent levels
-        wstd = np.nanstd(fl_dia['WT'],axis=axis0)
-        
-        # Filtering non turbulent layer
-        # Non turbulent defined as std(w) < 0.10 w_star
-        # Convection only when sigma_w > 10 % w_star
-        minturb = 0.10
-        level_filtered = np.where(wstd/wstar[ih]>minturb)[0]
-        # Loop only filtered level ONLY !
-        #[print('wtsd ',im,wstar[ih]) for im in wstd]
-        #print(level_filtered)
+        if var.shape[0] > 1:
+            
+            # Remove non-turbulent levels
+            wstd = np.nanstd(fl_dia['WT'],axis=axis0)
+            
+            # Filtering non turbulent layer
+            # Non turbulent defined as std(w) < 0.10 w_star
+            # Convection only when sigma_w > 10 % w_star
+            minturb = 0.10
+            level_filtered = np.where(wstd/wstar[ih]>minturb)[0]
+            # Loop only filtered level ONLY !
+            #[print('wtsd ',im,wstar[ih]) for im in wstd]
+            #print(level_filtered)
+        else:
+            # 2D field such as LWP
+            level_filtered = [0]
         
         
         print('**** Start level_filtered')
@@ -635,29 +658,59 @@ if not isfile:
              
             # Saving spectra
             if Dim=='2D':
-                k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra(var0,delta_x)
+                #k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra(var0,delta_x)
+                k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra1D(var0,delta_x)
                 spec_log_avg[0,zz,:]+=spec_log0
             
             if Dim=='3D':
                 # Need to verify direction
                 for ij in range(NX):
                     var1   = var0[ij,:] # each spectrum along W_E_direction
-                    k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra(var1,delta_x)
+                    
+                    # v1 PEB
+                    #time1     = time.time()
+                    #k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra(var1,delta_x)
+                    #time2     = time.time()
+                    #print('%s function took %0.3f ms' % ("PEB code", (time2-time1)*1000.0))
+                    
+                    # v2 : Me
+                    #time1     = time.time()
+                    k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra1D(var1,delta_x)
+                    #time2     = time.time()
+                    #print('%s function took %0.3f ms' % ("New code", (time2-time1)*1000.0))
                     spec_log_avg[0,zz,:]+=spec_log0 #S-N
+                    
+                    # Test 1D with 2D code
+                    #kkaa,bb,cc,specdd = spectra.spectra1D(var1,delta_x)
+                    #print(ij,spec_log0,specdd)
+                    #print(bb/SPECTRE_V)
+                    #plt.scatter(spec_log0,specdd);plt.show()
+                    #plt.plot(k_v,SPECTRE_V,'k')
+                    #plt.plot(kkaa,bb,'r')
+                    #plt.scatter(kkaa,k_v);plt.show()
+
+                    #plt.show()
+                    #stop
                 for ij in range(NY):
                     var1   = var0[:,ij] # each spectrum along S_N_direction
-                    k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra(var1,delta_y)
+                    # v1 PEB
+                    #k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra(var1,delta_y)
+                    # v2
+                    k_v,SPECTRE_V,VAR_V,spec_log0 = spectra.spectra1D(var1,delta_y)
                     spec_log_avg[1,zz,:]+=spec_log0 #W-E
                 spec_log_avg[0,zz,:]/=NX
                 spec_log_avg[1,zz,:]/=NY
                 
-                # Test 3D
+                
+                # Test 2D
                 k_v2D,SPECTRE_V2D,VAR_V2D,spec_log2D_avg[zz,:] =\
                     spectra.spectra2D(var0,delta_x)
                 #print(k_v,k_v2D)
                 #print(k_v,2*np.pi/k_v2D)
                 #spectra.plot_spectra(k_v2D,spec_log2D,'test_spectra2D')
                 #stop
+                
+                
             del SPECTRE_V,VAR_V,spec_log0
 
         timeB = time.time()
@@ -670,8 +723,10 @@ if not isfile:
             timeX = time.time()
             # No filter for 2D
             for ik,zz in enumerate(level):
-                infoch    = [zz,findname(var1c,dash=True)]
+                #print(ik,zz,nb_avg[ik],min_nb)
                 if nb_avg[ik]>min_nb:
+                    #print(ik,zz,' IN LOOP')
+                    infoch    = [zz,findname(var1c,dash=True)]
                     #NIJ=spec_log_avg.shape[0]
                     spec_plot = np.zeros((Na,NS))
                     spec_fit  = np.zeros((Na,NS))
@@ -691,7 +746,7 @@ if not isfile:
                                 lambda_fit[ij,ilog,ik] = spectra.lamb2k(xp[np.argmax(spec_fit[ij,:])])
 
                     # Plot spectra            
-                    if pltspectra: # and ik==40.:
+                    if pltspectra and not np.isnan(spec_plot[0,:]).all(): # and ik==40.:
                         filesptr  = filesptr1.replace('ALT','{:4.1f}'.format(zz*1000.))
                         
                         y1b,y1bfit = None,None
@@ -708,29 +763,47 @@ if not isfile:
                     # Analysis of 2D field
                     if Dim == '3D':
                         spec_plot2D = spec_log2D_avg[ik,:]
-                        lambda_max2D[ilog,ik] = spectra.lamb2k(k_v[np.argmax(spec_plot2D)])
-                        if fitpoly:
-                            xp   = k_v2D
-                            p    = np.poly1d(np.polyfit(xp, spec_plot2D, xpoly))
-                            spec_fit2D = p(xp)
-                            lambda_fit2D[ilog,ik] = spectra.lamb2k(xp[np.argmax(spec_fit2D)])
-                        if pltspectra:
-                            filesptr  = filesptr1.replace('ALT','{:4.1f}'.format(zz*1000.))
-                            filesptr  = filesptr.replace('spectra','spectra2D')
-                            zmax = None
+                        if not np.isnan(spec_plot2D).all():
+                            lambda_max2D[ilog,ik] = spectra.lamb2k(k_v[np.argmax(spec_plot2D)])
                             if fitpoly:
-                                zmax = lambda_fit2D[ilog,ik]
-                            spectra.plot_spectra(k_v,spec_plot2D,filesptr,\
-                                                 y1afit=spec_fit2D,\
-                                                 infoch=infoch,zi=zi,zmax=zmax,\
-                                                 labels=lab_spectra2D)
+                                xp   = k_v2D
+                                p    = np.poly1d(np.polyfit(xp, spec_plot2D, xpoly))
+                                spec_fit2D = p(xp)
+                                lambda_fit2D[ilog,ik] = spectra.lamb2k(xp[np.argmax(spec_fit2D)])
+                            if pltspectra:
+                                filesptr  = filesptr1.replace('ALT','{:4.1f}'.format(zz*1000.))
+                                filesptr  = filesptr.replace('spectra','spectra2D')
+                                zmax = None
+                                if fitpoly:
+                                    zmax = lambda_fit2D[ilog,ik]
+                                spectra.plot_spectra(k_v,spec_plot2D,filesptr,\
+                                                     y1afit=spec_fit2D,\
+                                                     infoch=infoch,zi=zi,zmax=zmax,\
+                                                     labels=lab_spectra2D)
+                                    
+                            # Calculate length scale from cloudmetrics
+                            wavenumbers, psd_1d_radial, psd_1d_azimuthal = cm.scalar.compute_spectra(var[ik,:,:],dx=delta_x)
+                            #spectral_length_moment = cm.scalar.spectral_length_moment(wavenumbers, psd_1d_radial)
+                            #spectral_length_median = cm.scalar.spectral_length_median(wavenumbers, psd_1d_radial)
+                            print(ilog,ik,lambda_max2D[ilog,ik])
+                            #print(ilog,ik,spectral_length_moment)
+                            #spectral_slope = cm.scalar.spectral_slope(wavenumbers, psd_1d_radial)
+                            #print(ilog,ik,spectral_slope)
+                            print('Plot Graph Test')
+                            # plt.loglog(wavenumbers,psd_1d_radial,'k')
+                            # plt.loglog(k_v,spec_plot2D,'r')
+                            # plt.loglog(k_v,spec_plot[0,:],'b')
+                            # plt.loglog(k_v,spec_plot[1,:],'b--')
+                            # plt.show()
+                            # stop
+                    del spec_plot,spec_fit
+                    
             # Save spec_fit?
 
             # End of spectrum averaging - Reinit
             i0=0; ilog+=1
             nb_avg = np.zeros(NL)
             spec_log_avg=np.zeros((Na,NL,NS))
-            del spec_plot,spec_fit,xp,p #,y1b,y1bfit
             
             timeY = time.time()
             print('%s function took %0.3f ms' % ("Log_Spec ", (timeY-timeX)*1000.0)) #6.4s
@@ -808,6 +881,11 @@ else:
 # Relative to zi
 relzi = True
 
+# contour plot
+lvl     = [0.,4.,0.1,1.]
+if "FIRE" in model:
+    lvl = [0.,45.,0.5,5.]
+
 x,y   = hourspectra,level
 PBL   = data['PBLspectra']
 
@@ -823,11 +901,19 @@ for ij,lamb in enumerate(lambdach):
     namefig0 = '_'.join([lamb,var1c,EXP,model])
     namefig0 += '_s'+'{0:02}'.format(smoothspectra)
     
-    for ij in range(Na):
-        axspec   = '-'.join(var1D[:2][-1-ij].split('_'))
+    Naplot = Na
+    if '2D' in lamb:
+        Naplot = 1
+        
+    for ij in range(Naplot):
+        #axspec   = '-'.join(var1D[:2][-1-ij].split('_'))
+        axspec = '-'.join(var1D[1:][-1-ij].split('_')[:-1])
         namefig  = namefig0+'_'+axspec
         title    = title0.replace('DDD',axspec)
-        tmp = data[lamb][ij,:,:].T
+        tmp = data[lamb][ij,:,:]
+        #if Naplot>1:
+        #    tmp = tmp[ij,:,:]
+        tmp = tmp.T # 2D
         if relzi:
             tmp /= PBL
             title += ' relative to zi (-)'
@@ -838,7 +924,9 @@ for ij,lamb in enumerate(lambdach):
         spectra.plot_length(x,y,tmp,\
                         pathfig=pathsave1,
                         namefig=namefig,\
-                        title=title,zminmax=zminmax,\
+                        title=title,
+                        zminmax=zminmax,\
+                        lvl=lvl,\
                         PBLheight=PBL,relzi=relzi)
 
 

@@ -12,7 +12,12 @@ import netCDF4 as nc
 from netCDF4 import Dataset
 import gc
 
-
+def repeat(zz,ss):
+    #if len(ss)==1:
+    zz  = np.repeat(zz[ :,np.newaxis],ss[0],axis=1)        
+    if len(ss)==2:
+        zz  = np.repeat(zz[ :,:, np.newaxis],ss[1],axis=2)
+    return zz
 
 def resiz(tmp): # should be removed by pre-treatment
     return np.squeeze(tmp)
@@ -106,10 +111,19 @@ def createnew(vv,DATA,var1D,idxzi=None):
             RCT = tryopen(name,DATA)
             if RCT is not None:
                 ss  = RCT.shape
-                tmp = np.zeros((ss[1],ss[2]))
-                zz  = np.repeat(np.repeat(data[2][ :,np.newaxis, np.newaxis],ss[1],axis=1),ss[2],axis=2)
-                for  ij in range(len(data[2])-1):
-                    tmp[:,:] += rho[ij,:,:]*RCT[ij,:,:]*(zz[ij+1,:,:]-zz[ij,:,:])
+                print(ss)
+                zz = repeat(data[2],(ss[1],ss[2]))
+
+                if len(ss)==3.:
+                    tmp = np.zeros((1,ss[1],ss[2]))
+                    for  ij in range(len(data[2])-1):
+                        tmp[0,:,:] += rho[ij,:,:]*RCT[ij,:,:]*(zz[ij+1,:,:]-zz[ij,:,:])
+                else:
+                    tmp = np.zeros((1,ss[1]))
+                    for  ij in range(len(data[2])-1):
+                        tmp[0,:] += rho[ij,:]*RCT[ij,:]*(zz[ij+1,:]-zz[ij,:])
+                #zz  = np.repeat(np.repeat(data[2][ :,np.newaxis, np.newaxis],ss[1],axis=1),ss[2],axis=2)
+
             else:
                 tmp = None
             if vv == 'Reflectance' and tmp is not None:
