@@ -35,6 +35,8 @@ def infocas(model):
     textcas0['IHOP2D']='2D Meso-NH model (v5.5.1) \nIHOP Clear sky (Dx=Dz=25m, Dt=1s)'
     textcas0['IHOP2DNW']='2D Meso-NH model (v5.5.1) \nIHOP Clear sky No Winds (Dx=Dz=25m, Dt=1s)'
     textcas0['FIRE2Dreal']='2D Meso-NH model (v5.5.1) \nFIRE Stratocumulus (Dx=50m, Dz=10m, Dt=1s)'
+    textcas0['ASTEX2D']='2D Meso-NH model (v5.5.1) \nBOMEX Cumulus (Dx=160m, Dz=20m, Dt=1s)'
+
 
     if model in textcas0.keys():
         textcas=textcas0[model]
@@ -74,7 +76,7 @@ def variance(tmp):
 def skewness(tmp):
     return st.skew(tmp)
 
-def findlevels(var, Anom):
+def findlevels(var, Anom, model=None):
     levels = {}; tmp=None
     
     levels['Mean'] = {}
@@ -92,6 +94,9 @@ def findlevels(var, Anom):
     levels['Mean']['DIVUV'] =[-0.04,0.04,0.005]
     levels['Mean']['RVT']   =[0,17,1]
     levels['Mean']['RCT']   =[0,1,0.05]
+    if 'BOMEX' in model:
+        levels['Mean']['RNPM']  =[5,18,0.05]
+    
     
     levels['Anom']['RNPM']  =[-1,1,0.05]
     levels['Anom']['THLM']  =[-1,1,0.05]
@@ -153,7 +158,8 @@ def findname(var,dash=False):
         
 def findextrema(model):
     zminmax = None
-    zmax  = {'FIRE':0.8, 'BOMEX':2, 'ARMCU':3,'IHOP':2.5}
+    zmax  = {'FIRE':0.8, 'BOMEX':2, 'ARMCU':3,\
+             'IHOP':2.5, 'ASTEX':3}
     for x in zmax.keys():
         if x in model:
             zminmax=[0,zmax[x]]
@@ -174,7 +180,7 @@ def findcmap(var,Anom=0):
     cmapall['Mean']['SVT005']='Greens'
     cmapall['Mean']['SVT006']='Greens'
     cmapall['Mean']['DIVUV']='RdBu_r'
-    cmapall['Mean']['RNPM']='Blues'
+    cmapall['Mean']['RNPM']='Blues_r'
     cmapall['Mean']['THLM']='Reds_r'
     
     cmapall['Anom']['RNPM'] = 'BrBG'
@@ -196,7 +202,7 @@ def plot2D(data,x,y,filesave
            ,levels=None,RCT=None,idx_zi=None
            ,data2=None,var2c=None
            ,timech=None,joingraph=False
-           ,textcas=None):
+           ,model=None):
     
 
     #fig   = plt.figure()
@@ -213,11 +219,15 @@ def plot2D(data,x,y,filesave
     sign   = True
     signature = '$\it{Florent\ Brient}$'
     
-    levels = findlevels(var1c,Anom=Anom)
+    levels = findlevels(var1c,Anom=Anom,model=model)
     cmap   = findcmap(var1c,Anom=Anom)
+    if model is not None:
+        textcas=infocas(model)
+    
     for ij in np.arange(len(ax)):
         if ij==1: # Caution - remove data, level
-            data=data2;levels=findlevels(var2c,Anom=Anom)
+            data=data2
+            levels=findlevels(var2c,Anom=Anom,model=model)
             cmap=findcmap(var2c,Anom=Anom)
         #print(x.shape,y.shape,data.shape)
         
@@ -229,6 +239,7 @@ def plot2D(data,x,y,filesave
           norm = mpl.colors.Normalize(vmin=nmin, vmax=abs(nmin))
         
         time1 = time.time()
+        print(x.shape,y.shape,data.shape)
         CS    = ax[ij].contourf(x,y,data,cmap=cmap,levels=levels,norm=norm,extend='both')
         time2 = time.time()
         print('%s function took %0.3f ms' % ("Contourf ", (time2-time1)*1000.0))
@@ -238,7 +249,7 @@ def plot2D(data,x,y,filesave
         
         if var2 is not None and joingraph:
             # Add contour
-            levels=findlevels(var2c,Anom=Anom)
+            levels=findlevels(var2c,Anom=Anom,model=model)
             if levels is not None:
                 levels=levels[::10]
             #cmap_r = pltl.reverse_colourmap(cm.get_cmap(findcmap(var2c)))
@@ -325,7 +336,7 @@ pltcloud=True
 # Plot Anomalies
 pltanom=False
 # Join graph of var1 and var2
-joingraph=True
+joingraph=False
 # Plot turbulent spectra
 pltspectra=True
 
@@ -338,13 +349,13 @@ if pltanom:
 if Dim=='2D':
     file0 = 'EXP.1.VTIME.OUT.TTIME.nc'
     VTIME = 'V0001'
-    model = 'BOMEX2D'
+    model = 'ASTEX2D'
     #'FIRE2Dreal' #'IHOP2D' , 'BOMEX2D', 'IHOP2DNW','BOMEX2D', 'ARMCU2D'
     T0    = 1
     TMAX  = 500 #400 #840
     if model == 'FIRE2Dreal':
-        EXP   = 'FIR2D'
-        #EXP   = 'F2DNW'
+        #EXP   = 'FIR2D'
+        EXP   = 'F2DNW'
         #EXP   = 'F2DBI'
         #EXP   = 'FNWx2'
         VTIME = 'V0001'
@@ -359,9 +370,14 @@ if Dim=='2D':
         VTIME = 'V0001'
         TMAX  = 500
     elif model == 'ARMCU2D':
-        EXP   = 'Ru0x0'
+        #EXP   = 'Ru0x0'
+        EXP   = 'Ru0NW'
         VTIME = 'V0001'
         TMAX  = 900
+    elif model == 'ASTEX2D':
+        EXP   = 'ASTEX'
+        VTIME = 'V0001'
+        TMAX  = 420
     path0 = '/home/fbrient/MNH/'+model+'/'
     hours = np.arange(T0,TMAX,1)
     dt    = 1./60. # minutes 
@@ -405,16 +421,12 @@ file0 = file0.replace('VTIME',VTIME)
 file0 = path0+file0
 
 # Variable to study
-#var1c  = 'RNPM'
+#var1c  = 'RNPM', 'THV', 'SVT004','RCT','LWP
 var1c  = 'WT'
-#var1c  = 'THV'
-#var1c = 'SVT004'
-#var1c = 'RCT'
-#var1c = "LWP"
 
 
 var2c  = None
-var2c  = 'SVT004'
+var2c  = 'RNPM'
 #var2c  = 'THLM'
 #var2c  = 'THV'
 #var2c  = 'WT'
@@ -546,6 +558,7 @@ if not isfile:
         #var   = fl_dia[var1c][:].squeeze() #level, ni
         #var   = var[:].squeeze()
         ofdim = find_offset(var1c)
+        print(var1c,ofdim,rmb)
         var   = ajax(var,of=ofdim,rmb=rmb)
         
         # Second variable (optionnal)
@@ -574,6 +587,8 @@ if not isfile:
             if pltcloud and ('RCT' in fl_dia.variables):
                 RCT = ajax(fl_dia['RCT'][:].squeeze().T,of=1000.,rmb=rmb)
             varplot, varplot2 = var,var2
+            print('var,var2 ',var.shape,var2.shape)
+            stop
             if pltanom:
                 varplot=tl.anomcalc(varplot)
                 if varplot2 is not None:
@@ -590,7 +605,7 @@ if not isfile:
                               RCT=RCT,idx_zi=idxzi[ih],
                               data2=varplot2,var2c=var2c,
                               timech=timech,joingraph=joingraph,
-                              textcas=textcas)
+                              model=model)
             #plt.contourf(xi,zi,var.T)
             #plt.show()
             del RCT

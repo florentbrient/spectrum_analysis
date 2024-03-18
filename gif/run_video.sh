@@ -1,8 +1,8 @@
-cas='IHOP2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
-EXP='IHOP2' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
-typs=('Anom') #(Mean Anom)
-vars=('WT' 'THV')
-joingraph=0
+cas='FIRE2Dreal' #'FIRE2Dreal' #'BOMEX2D' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
+EXP='F2DNW' #'F2DNW' #'B2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
+typs=('Mean') #(Mean Anom)
+vars=('DIVUV' 'SVT004')
+joingraph=1
 
 
 for var in "${vars[@]}";do
