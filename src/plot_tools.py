@@ -118,6 +118,12 @@ def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
         cmap(np.linspace(minval, maxval, n)))
     return new_cmap
 
+def inv_cmap(data,cmap0):
+    idx=np.sign(np.nanmin(data))-np.sign(np.nanmax(data))
+    if idx != 0:
+        cmap0='RdBu'
+    return cmap0
+
 
 # Suppression des axes a droite et en haut
 # Adaptation des scripts de Florent Brient

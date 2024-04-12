@@ -1,8 +1,8 @@
-cas='FIRE2Dreal' #'FIRE2Dreal' #'BOMEX2D' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
-EXP='F2DNW' #'F2DNW' #'B2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
+cas='ASTEX2D' # 'ASTEX2D'  'FIRE2Dreal' #'BOMEX2D' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
+EXP='ASTEX' #'F2DNW' #'B2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
 typs=('Mean') #(Mean Anom)
-vars=('DIVUV' 'SVT004')
-joingraph=1
+vars=('RCT' 'WT')
+joingraph=0
 
 
 for var in "${vars[@]}";do

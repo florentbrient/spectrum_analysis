@@ -230,6 +230,7 @@ def writenetcdf(file_netcdf,data_dims,data
     xy[:]    = data_dims[0]
     time[:]  = data_dims[1]
     level[:] = data_dims[2]
+    timeall[:]=data_dims[3]
     for key in data.keys():
         if len(data[key].shape)==3: units=('xy','time','level')
         elif len(data[key].shape)==2: units=('time','level') 

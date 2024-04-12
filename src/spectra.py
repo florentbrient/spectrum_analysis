@@ -125,6 +125,9 @@ def _get_psd_1d_radial(psd_2d, dx):
     # Compute prefactor that converts to spectral density and corrects for
     # annulus discreteness
     Ns = ndimage.sum(np.ones(psd_2d.shape), r_int, index=rp)
+    #print('Ns',Ns)
+    print('Ns',Ns.max())
+
 
     kp = 2 * np.pi / L * ndimage.sum(r, r_int, index=rp) / Ns
 
@@ -289,6 +292,10 @@ def fpsdnew(x,Fs=1,delta=1):
     Abins, _, _ = stats.binned_statistic(knrm, fourier_amplitudes,
                                          statistic = "mean",
                                          bins = kbins)
+    
+    #print('Abins',Abins)
+    #print('Abins',Abins.max())
+    
     # Remove after by myself
     #Abins *= np.pi * (kbins[1:]**2 - kbins[:-1]**2)
     
@@ -310,9 +317,7 @@ def spectra2D(data,delta):
     f_para,SPECTRE_PARA = fpsdnew(data,delta=delta)
     k_para              = 2*np.pi*f_para/delta
     VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(k_para)) #def
-    #VAR_PARA            = np.sum(SPECTRE_PARA*np.diff(k_para))
     spec_log            = k_para*SPECTRE_PARA/VAR_PARA #def
-    #print('VAR_PARA ',VAR_PARA,k_para)
     
     # FFT from cloudmetrics
     F = np.fft.fft2(data)  # 2D FFT (no prefactor)
@@ -327,8 +332,9 @@ def spectra2D(data,delta):
     #plt.scatter(psd_1d_rad[1:],spec_log[1:],color='r')
     #plt.show()
     
-    plt.loglog(k1d,psd_1d_rad,'k')
-    plt.loglog(k_para,spec_log/1000.,'r')
+    plt.plot(k1d,psd_1d_rad,'k')
+    #plt.loglog(k_para,spec_log/1000.,'r')
+    plt.plot(k_para,spec_log/1000.,'r')
     plt.show()
     
     return k_para,SPECTRE_PARA,VAR_PARA,spec_log
@@ -537,11 +543,11 @@ def plot_spectra(k_v,y1a,fig_name2\
 # Plot Length Scale
 #------------------------------
 
-def plot_length(x,y,data,
+def contour_length(x,y,data,
                 pathfig='./',namefig='namefig',\
                 title='title',zminmax=None,\
                 PBLheight=None,relzi=False,\
-                cmap0='Blues',\
+                cmap0='cividis',\
                 lvl=[0.,4.,0.1,1.],\
                 xsize = (8,6),fts=16):
     # lvl give levels (max,min) + interval color + interval contour
@@ -556,13 +562,18 @@ def plot_length(x,y,data,
     
     xx, yy = np.meshgrid(x,y)
     print(xx.shape,yy.shape,data.shape)
+    
+    # Check negative/positive 
+    cmap0 = plot_tools.inv_cmap(data,cmap0)
+    
     # Useful?
     cmap   = plt.colormaps[cmap0]
+    
     norm   = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
     
     # Plot contourf data
     fig    = plt.figure(); ax    = fig.add_subplot()
-    CS     = plt.pcolormesh(xx,yy,data,cmap=cmap,norm=norm) #vmin=vmin, vmax=vmax)
+    CS     = plt.pcolormesh(xx,yy,data,cmap=cmap,norm=norm)
     plt.colorbar(CS)
     CS2    = plt.contour(xx,yy,data,colors='k',linestyles='dashed',\
                          levels=levels_contour,linewidth = 1)
@@ -583,9 +594,81 @@ def plot_length(x,y,data,
     
     ax.set_xlabel(labelx,fontsize=fts)
     ax.set_ylabel(labely,fontsize=fts)
+    
     plt.title(title)
+    
+    # adjust figure
+    ax.locator_params(axis='x', nbins=5)
+    ax.locator_params(axis='y', nbins=7)
+    width_spines= 2
+    plot_tools.adjust_spines(ax, ['left', 'bottom'],width_spines)
+    ax.get_yaxis().set_tick_params(direction='out')
+    ax.get_xaxis().set_tick_params(direction='out')
     savefig(fig,pathfig=pathfig,namefig=namefig,fts=fts,xsize=xsize)
+    
     
     del fig,ax
     return 
+
+def plot_length(x,y,data,
+                pathfig='./',namefig='namefig',\
+                title='title',zminmax=None,\
+                PBLheight=None,relzi=False,\
+                var='Var',\
+                #lvl=[0.,4.,0.1,1.],\
+                xsize = (5,6),fts=16):
+    
+    ss = data.shape
+    
+    # Figure Information
+    colors=['Orange','Red','Blue','Purple','Black','Yellow'] 
+    cmap   = 'autumn'
+    #colors = plt.get_cmap(cmap)(range(ss[1]))
+    colors = plt.get_cmap(cmap)(np.linspace(0, 1, ss[1]))
+    print(colors[0])
+    
+    
+    size_leg = 14
+    size_ticks = 12
+    width_spines= 2
+    spines = ['left', 'bottom','top','right']
+    largeur_fig = 35. # en cm
+    hauteur_fig = 22. # en cm
+    
+
+    fig    = plt.figure();ax = fig.add_subplot(111)
+    fig.set_tight_layout(True)
+    for ij in range(ss[1]):
+        color = tuple(colors[ij])
+        print(ij,color)
+        ax.plot(data[:,ij],y,color=color)
+        ax.axhline(PBLheight[ij],ls='--',color=color)
+    
+    axes = plt.axis()
+    if (np.sign(axes[0])!=np.sign(np.nanmax(axes[1]))):
+        ax.axvline(x=0, color='k', linewidth=1)
+    print('axes ',axes)
+    #ax.set_xlim([0,max(x)])
+    if zminmax is not None:
+        ax.set_ylim(zminmax)
+    
+    # Label names
+    xstring = var
+    ystring = 'Altitude (km)'
+    #plot_tools.legend_fig(xstring,ystring,size_leg,size_ticks)
+    ax.set_xlabel(xstring,fontsize=fts)
+    ax.set_ylabel(ystring,fontsize=fts)
+    
+    # adjust figure
+    ax.locator_params(axis='x', nbins=5)
+    ax.locator_params(axis='y', nbins=7)
+    plot_tools.adjust_spines(ax, ['left', 'bottom'],width_spines)
+    ax.get_yaxis().set_tick_params(direction='out')
+    ax.get_xaxis().set_tick_params(direction='out')
+
+    #plot_tools.adjust_spines(ax, spines, width_spines)
+    #plt.tight_layout()
+    savefig(fig,pathfig=pathfig,namefig=namefig,fts=fts,xsize=xsize)
+
+    return
 
