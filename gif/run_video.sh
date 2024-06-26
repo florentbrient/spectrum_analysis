@@ -1,7 +1,8 @@
-cas='ASTEX2D' # 'ASTEX2D'  'FIRE2Dreal' #'BOMEX2D' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
-EXP='ASTEX' #'F2DNW' #'B2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
+cas='FIRE2Dreal' # 'ASTEX2D'  'FIRE2Dreal' #'BOMEX2D' #'IHOP2' #'FIR2D' #'IHOP0' #'FIRE' #IHOP
+EXP='FIR2D' #'F2DNW' #'B2DNW' #'IHOP2' #'FIR2D' #'IHOP0' #RH04
 typs=('Mean') #(Mean Anom)
-vars=('RCT' 'WT')
+vars=('SVT004' 'SVT006')
+model='V5-5-1'
 joingraph=0
 
 
@@ -16,7 +17,7 @@ start=001
 delay=10
 loop=0
 
-path='../figures/2D/'$cas'/'$EXP'/'
+path='../figures/'$model'/2D/'$cas'/'$EXP'/'
 
 # ../figures/2D/IHOP2DNW/IHOP2/SVT006SVT004_join
 # SVT004SVT006_join_IHOP2_V0001_720.png

@@ -47,6 +47,7 @@ def infocas(model,vers='v5.5.1',dx='?',dz='?'):
     textcas0['FIRE2Dreal']='{MNH} \nFIRE Stratocumulus (Dx={XX}m, Dz={ZZ}m, Dt={TT}s)'
     textcas0['ASTEX2D']='{MNH} \nASTEX StCu-Cu (Dx={XX}m, Dz={ZZ}m, Dt={TT}s)'
     textcas0['ARMCU2D']='{MNH} \nARMCu Cumulus (Dx={XX}m, Dz={ZZ}m, Dt={TT}s)'
+    textcas0['RICO2D']='{MNH} \nRICO Cumulus (Dx={XX}m, Dz={ZZ}m, Dt={TT}s)'
 
 
     if model in textcas0.keys():
@@ -114,7 +115,7 @@ def findlevels(var, Anom, model=None):
     levels['Anom']['WT']    =[-10.,10.,0.1]
     levels['Anom']['PABST'] =[-6.,6.,0.1]
     
-    if 'BOMEX' in model:
+    if 'BOMEX' in model or 'RICO' in model:
         levels['Mean']['RNPM']  =[5,18,0.05]
     if 'ASTEX' in model:
         levels['Mean']['SVT006']=[0,10,0.1]
@@ -131,10 +132,11 @@ def findlevels(var, Anom, model=None):
             tmp = np.append(tmp0[3],tmp)
     return tmp
 
-def findlvl(var,model):
+def findlvl(var,model,varname='VAR'):
     # contour plot
     lvl     = [0.,4.,0.1,1.]
-    if "FIRE" in model:
+    
+    if "FIRE" in model and varname != 'WT':
         lvl = [0.,45.,0.5,5.]
         
     if 'skew' in var:
@@ -188,7 +190,7 @@ def findname(var,dash=False):
 def findextrema(model):
     zminmax = None
     zmax  = {'FIRE':0.8, 'BOMEX':2, 'ARMCU':3,\
-             'IHOP':2.5, 'ASTEX':2.5}
+             'IHOP':2.5, 'ASTEX':2.5, 'RICO':3,}
     for x in zmax.keys():
         if x in model:
             zminmax=[0,zmax[x]]
@@ -347,6 +349,15 @@ def plot2D(data,x,y,filesave
 def func(x, a, b, c, d):
   return a + b * x + c * x ** 2 + d * x ** 3
 
+def integrale_trapez(yy_x,x):
+# ===========================
+  # compute the integral yy_x dx using the trapezoidal rule
+    dx = x[1:]-x[:-1] # wavenumbre ingrement between two points
+    # Compute the integral over the whole spectrum using the trapezoidal rule
+    integr = np.sum(0.5*(yy_x[1:]+yy_x[:-1])*dx)
+    return integr
+
+
 #####
 # This code aims to calculate and draw 
 # -variance
@@ -369,7 +380,7 @@ pltanom=False
 # Join graph of var1 and var2
 joingraph=False
 # Plot turbulent spectra
-pltspectra=False
+pltspectra=True
 
 Anom = 0; anomch=''
 if pltanom:
@@ -384,7 +395,7 @@ Version="V5-5-1"
 if Dim=='2D':
     file0 = 'EXP.1.VTIME.OUT.TTIME.nc'
     VTIME = 'V0001'
-    model = 'IHOP2D'
+    model = 'RICO2D'
     #'FIRE2Dreal' #'IHOP2D' , 'BOMEX2D', 'IHOP2DNW','BOMEX2D', 'ARMCU2D', 'ASTEX2D'
     T0    = 1
     TMAX  = 760 #400 #840
@@ -394,7 +405,7 @@ if Dim=='2D':
         #EXP   = 'F2DBI'
         #EXP   = 'FNWx2'
         VTIME = 'V0001'
-        TMAX  = 720
+        TMAX  = 1440 #2880 #720
     elif model == 'IHOP2D':
         EXP   = 'IHOP0'
         TMAX  = 840
@@ -406,6 +417,10 @@ if Dim=='2D':
         EXP   = 'B2DNW'
         VTIME = 'V0001'
         TMAX  = 500
+    elif model == 'RICO2D':
+        EXP   = 'R2DNW'
+        VTIME = 'V0001'
+        TMAX  = 720
     elif model == 'ARMCU2D':
         #EXP   = 'Ru0x0'
         EXP   = 'Ru0NW'
@@ -431,7 +446,7 @@ elif Dim=='3D':
     VTIME = "V0001"
     model,EXP = "IHOPNW","IHOP0"
     #model,EXP,VTIME = "FIREWIND","WDFor","V0301"
-    model,EXP,VTIME = "FIRE","Ls2x0","V0301"
+    #model,EXP,VTIME = "FIRE","Ls2x0","V0301"
     
     # Simulations from Jean-Zay (new MNH)
     path='/home/fbrient/GitHub/objects-LES/data/'
@@ -462,18 +477,17 @@ file0 = file0.replace('VTIME',VTIME)
 file0 = path0+file0
 
 # Variable to study
-#var1c  = 'RNPM', 'THV', 'SVT004','RCT','LWP
-var1c  = 'LWP'
+#var1c  = 'RNPM', 'THV', 'SVT004','RCT','LWP, 'TKE'
+var1c  = 'RNPM'
 
 
 var2c  = None
-#var2c  = 'WT'
-#var2c  = 'THLM', 'THV', 'SVT006'
+#var2c  = 'WT', 'THLM', 'THV', 'SVT006'
 
 covar = None
 #covar = var1c
-if covar is not None:
-    var2c = None
+#if covar is not None:
+ #   var2c = None
 
 varall  = ''.join([var1c,var2c]) if var2c is not None else var1c
 varall  = 'c'+''.join([var1c,var2c]) if covar is not None else var1c
@@ -518,7 +532,11 @@ pathsave0+=EXP+"/";mkdir(pathsave0)
 pathsave1=pathsave0 # For final plots
 pathsave0+=varall2+"/";mkdir(pathsave0)
 filesave0=pathsave0+'_'.join([varall2,EXP,VTIME])+'_TTIME'
-pathsave2=pathsave1+var1c+'/';mkdir(pathsave2) # For spectra
+
+if covar:
+    pathsave2=pathsave1+varall+'/';mkdir(pathsave2) # For spectra
+else:
+    pathsave2=pathsave1+var1c+'/';mkdir(pathsave2) # For spectra
 filesptr0=pathsave2+'spectra_'+'_'.join([varall,EXP,VTIME]) \
     +'_TTIME'+'_zALT_s'+'{0:02}'.format(smoothspectra)
 
@@ -612,7 +630,12 @@ if not isfile:
         if var2c is not None:
             var2   = tl.createnew(var2c,fl_dia,var1D)
             #var2  = fl_dia[var2c][:].squeeze()
-            var2  = ajax(var2,find_offset(var2c),rmb=rmb) #.T 
+            var2  = ajax(var2,find_offset(var2c),rmb=rmb) #.T
+            
+        if covar is not None:
+            var  = tl.anomcalc(var)
+            var2 = tl.anomcalc(var2)
+            var  = var*var2
     
 
         # Omega star (To remove non-turbulent layer)
@@ -757,6 +780,18 @@ if not isfile:
                 k_v2D,SPECTRE_V2D,VAR_V2D,spec_log2D_avg[zz,:] =\
                     spectra.spectra2D(var0,delta_x)
                     
+                # spec_log2D is from cloudmetrics    
+                spec=spec_log2D_avg[zz,:]
+                #print('VAR: ',np.mean(var0),np.var(var0),np.var(var0)*np.pi/4.)
+                #tmpint = integrale_trapez(spec,k_v2D)
+                # Les 2 premiers sont égales, le 3eme quasiment aux 2 autres
+                #print('INTEGRALE ',tmpint)
+                #print('INT 2: ', np.trapz(spec, x=k_v2D))
+                #var_psd = np.sum(spec) * 2 * np.pi / (np.min(var0.shape)*delta_x)
+                #print('INT 3 ',var_psd)
+                #print('INT 4 ', np.sum(spec))
+                
+                    
                 #print(k_v,k_v2D)
                 #print(k_v,2*np.pi/k_v2D)
                 #spectra.plot_spectra(k_v2D,spec_log2D,'test_spectra2D')
@@ -768,8 +803,6 @@ if not isfile:
         timeB = time.time()
         print('%s function took %0.3f ms' % ("Loop Level_fitered ", (timeB-timeA)*1000.0))
 
-        
-        print('ilog  ',ilog)
         # Smoothing spectra
         if log_spec:
             min_nb=smoothspectra/2
@@ -813,6 +846,7 @@ if not isfile:
                         spectra.plot_spectra(k_v,spec_plot[0,:],filesptr,\
                                              y1afit=spec_fit[0,:],\
                                              y1b=y1b,y1bfit=y1bfit,\
+                                             pltfit=False,\
                                              infoch=infoch,zi=zi,zmax=zmax,\
                                              labels=lab_spectra)
                     # Analysis of 2D field
@@ -833,6 +867,7 @@ if not isfile:
                                     zmax = lambda_fit2D[ilog,ik]
                                 spectra.plot_spectra(k_v,spec_plot2D,filesptr,\
                                                      y1afit=spec_fit2D,\
+                                                     pltfit=False,\
                                                      infoch=infoch,zi=zi,zmax=zmax,\
                                                      labels=lab_spectra2D)
                                     
@@ -963,7 +998,7 @@ for ik,lamb in enumerate(lambdach):
     
     
     x,y   = hourspectra,level
-    lvl = findlvl(lamb,model)
+    lvl = findlvl(lamb,model,varname=var1c)
     
     tmp0     = data[lamb]
     Naplot = Na
@@ -1005,13 +1040,15 @@ for ik,lamb in enumerate(lambdach):
         
         # Is it a 1D data?
         plot2D=True
-        if len(tmp[~np.isnan(tmp)].shape)==1:
-            plot2D=False
+        # Problem: A corriger pour LWP !!
+        #if len(tmp[~np.isnan(tmp)].shape)==1:
+        #    tmp = tmp[~np.isnan(tmp)]
+        #    plot2D=False
     
         spectra.contour_length(x,y,tmp,\
                         pathfig=pathsave2,
                         namefig=namefig2,\
-                        title=title2,
+                        title=title2,plot2D=plot2D,
                         zminmax=zminmax,\
                         lvl=lvl,\
                         PBLheight=PBL,relzi=relziplot)

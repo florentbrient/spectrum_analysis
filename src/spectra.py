@@ -136,6 +136,44 @@ def _get_psd_1d_radial(psd_2d, dx):
     return psd_1d
 
 
+def _get_psd_1d_azimuthal(psd_2d, d_theta=5, return_sectors=False):
+
+    # From https://medium.com/tangibit-studios/2d-spectrum-characterization-e288f255cc59
+    h = psd_2d.shape[0]
+    w = psd_2d.shape[1]
+    wc = w // 2
+    hc = h // 2
+
+    # note that displaying PSD as image inverts Y axis
+    # create an array of integer angular slices of d_theta
+    Y, X = np.ogrid[0:h, 0:w]
+    theta = np.rad2deg(np.arctan2(-(Y - hc), (X - wc)))
+    theta = np.mod(theta + d_theta / 2 + 360, 360)
+    theta = d_theta * (theta // d_theta)
+    theta = theta.astype(int)
+
+    # mask below r_min and above r_max by setting to -100
+    R = np.hypot(-(Y - hc), (X - wc))
+    mask = np.logical_and(R > 0, R < np.min([wc, hc]) - 1)
+    theta = theta + 100
+    theta = np.multiply(mask, theta)
+    theta = theta - 100
+
+    # SUM all psd_2d pixels with label 'theta' for 0<=theta<360 between r_min
+    # and r_max
+    sectors = np.arange(0, 360, int(d_theta))
+    print(sectors.shape,sectors)
+    psd_1d = ndimage.sum(psd_2d, theta, index=sectors)
+
+    # normalize each sector to the total sector power
+    pwr_total = np.sum(psd_1d)
+    psd_1d = psd_1d / pwr_total
+
+    if return_sectors:
+        return sectors, psd_1d
+    else:
+        return psd_1d
+
 #-----------------------------------------------
 # 2D SPECTRUM FUNCTION
 #-----------------------------------------------
@@ -262,6 +300,7 @@ def fpsdnew(x,Fs=1,delta=1):
         fourier_image = np.fft.fft(x)
         
     # test
+    # Only used if circular averaging
     #fourier_image = np.fft.fftshift(fourier_image)  # Shift so k0 is centred
         
     fourier_amplitudes = np.abs(fourier_image)**2
@@ -289,9 +328,13 @@ def fpsdnew(x,Fs=1,delta=1):
     #print(kvals)
     #stop
 
+    # Integral sur les fréquences?
     Abins, _, _ = stats.binned_statistic(knrm, fourier_amplitudes,
                                          statistic = "mean",
                                          bins = kbins)
+    
+    #fold over spectrum (Why? From PEB)
+    #Abins = 2*Abins
     
     #print('Abins',Abins)
     #print('Abins',Abins.max())
@@ -306,36 +349,93 @@ def fpsdnew(x,Fs=1,delta=1):
 def spectra1D(data,delta):
     f_para,SPECTRE_PARA = fpsdnew(data,delta=delta) # test new code
     k_para              = 2*np.pi*f_para/delta
-    VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(k_para))#def
+    #VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(k_para))#def
+    
+    # avec la formule ci-dessous, variance 2 fois moins fort que la normale 
+    #VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(f_para))# Integral en fréquence?
+    VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(k_para))# Integral en fréquence?
+    
+    
     #VAR_PARA            = np.sum(SPECTRE_PARA*np.diff(k_para))
     #print(k_para.shape,SPECTRE_PARA.shape,VAR_PARA.shape)
-    spec_log            = k_para*SPECTRE_PARA/VAR_PARA
+    #spec_log            = k_para*SPECTRE_PARA/VAR_PARA
+    spec_log            = SPECTRE_PARA/VAR_PARA
+
+    
+    print('1D var :',np.var(data))
+    print('1D VAR_PARA: ',VAR_PARA)
+    print('1D INTEGR in spec: ', np.trapz(spec_log, x=f_para))
+    print('1D INTEGR in SPECTRE_PARA: ', np.trapz(SPECTRE_PARA, x=f_para))
+
+    f_para2,SPECTRE_PARA2 = fpsd1D(data) # test new code
+    k_para2               = 2*np.pi*f_para2 #/delta
+    print('1D INTEGR in spec1d: ', np.trapz(k_para2*SPECTRE_PARA2, x=k_para2))
+
+    
     return k_para,SPECTRE_PARA,VAR_PARA,spec_log
 
 
 def spectra2D(data,delta):
     f_para,SPECTRE_PARA = fpsdnew(data,delta=delta)
     k_para              = 2*np.pi*f_para/delta
-    VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(k_para)) #def
+    #VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(k_para)) #def
+    VAR_PARA            = np.sum(SPECTRE_PARA[0:-1]*np.diff(f_para)) # Integral en fréquence?
+
     spec_log            = k_para*SPECTRE_PARA/VAR_PARA #def
     
-    # FFT from cloudmetrics
+    # FFT from cloudmetrics (compute_spectra)
     F = np.fft.fft2(data)  # 2D FFT (no prefactor)
     F = np.fft.fftshift(F)  # Shift so k0 is centred
     psd_2d = np.abs(F) ** 2 / np.prod(data.shape)  # Energy-preserving 2D PSD
     psd_1d_rad = _get_psd_1d_radial(psd_2d, delta)
+    psd_1d_azi = _get_psd_1d_azimuthal(psd_2d)  # Radial integral -> Sector 1D PSD
+    
     # Wavenumbers
     N = np.min(data.shape)
     L = delta * N
     k1d = 2 * np.pi / L * np.arange(1, N // 2 + 1)
     print(psd_1d_rad.max(),spec_log.max(),spec_log.max()/psd_1d_rad.max())
     #plt.scatter(psd_1d_rad[1:],spec_log[1:],color='r')
+    #plt.scatter(psd_1d_rad[0:-1],SPECTRE_PARA,color='r')
     #plt.show()
     
-    plt.plot(k1d,psd_1d_rad,'k')
+    # Slight difference- Need to understand why
+    # The difference might be related to the anisotropy of the field
+    # If it is anisotrophic at the extrema of the field, it might not be higher than pi/4
+    print('VARIANCE: ',np.var(data),np.var(data)*np.pi/4.)
+    print('INTEGR in spec2D: ', np.trapz(psd_1d_rad, x=k1d))
+    variance_psd0 = np.sum(psd_1d_rad) * 2 * np.pi / (L)
+    print("variance_psd: ",variance_psd0)
+    
+    # Almost egal
+    print('VAR_PARA: ',VAR_PARA)
+    print('INTEGR in spectre_para/var: ', np.trapz(SPECTRE_PARA/VAR_PARA, x=f_para)) #=1
+    print('INTEGR in spectre_para: ', np.trapz(SPECTRE_PARA, x=f_para))
+    print('INTEGR in spec_log: ', np.trapz(spec_log, x=f_para))
+#    variance_psd = np.sum(spec_log) * 2 * np.pi / (L)
+    variance_psd = np.sum(SPECTRE_PARA) * 2 * np.pi / (N*N) * delta
+    print("variance_psd: ",variance_psd)
+    
+    print("SUM AZI =", np.sum(psd_1d_azi)) # =1 ?
+    print(psd_1d_azi.shape)
+    plt.plot(np.arange(0, 360, int(5)),psd_1d_azi);plt.show()    
+
+    #k1d = k_para
+    #print(k1d.shape,k_para.shape)
+    #plt.scatter(k1d[1:],k_para)
+    
+    #plt.loglog(k1d,psd_1d_rad/variance_psd,'k')
+    plt.loglog(k1d,psd_1d_rad,'k--') # diff with spec_log=2PI/N? /variance_psd0*40.7
+    plt.loglog(k_para,f_para*SPECTRE_PARA,'r')
+    #plt.loglog(k_para,spec_log,'b')
+    print(np.mean(psd_1d_rad)/np.mean(f_para*SPECTRE_PARA))
+    #plt.loglog(k_para,k_para*SPECTRE_PARA/(VAR_PARA**2),'g')
+    
+    #plt.plot(k1d,psd_1d_rad,'k')
     #plt.loglog(k_para,spec_log/1000.,'r')
-    plt.plot(k_para,spec_log/1000.,'r')
-    plt.show()
+    #plt.plot(k_para,spec_log/1000.,'r')
+    #plt.show()
+    #stop
     
     return k_para,SPECTRE_PARA,VAR_PARA,spec_log
 
@@ -420,6 +520,7 @@ def plot_spectra(k_v,y1a,fig_name2\
                  ,y1b=None,y1bfit=None
                  ,y2a=None,y2afit=None
                  ,y2b=None,y2bfit=None
+                 ,pltfit=True
                  ,infoch=None,zi=None,zmax=None
                  ,labels=[r'$\mathbf{W - E \;direction}$']):
     
@@ -446,21 +547,27 @@ def plot_spectra(k_v,y1a,fig_name2\
     if y1b is not None:
         ax.plot(k_v,y1b,color=colors[1],linewidth=2,label=labels[1])
         
-    if y1afit is not None:
-        ax.plot(k_v, y1afit, '--',color=colors[0])
-    if y1bfit is not None:
-        ax.plot(k_v, y1bfit, '--',color=colors[1])
+    if pltfit:
+        if y1afit is not None:
+            ax.plot(k_v, y1afit, '--',color=colors[0])
+        if y1bfit is not None:
+            ax.plot(k_v, y1bfit, '--',color=colors[1])
     
     k0max=k_v.max()
-    k0min=k0max/10
+    k0min=k0max/2
+    k1max=k0max/2
+    k1min=k0max/8
+    
     #k0 = np.linspace(1e-2,6e-2,1000)#*1000.
     k0 = np.linspace(k0min,k0max,1000)#*1000.
+    k1 = np.linspace(k1min,k1max,1000)#*1000.
+    
     # pentes en -2/3 (k*k^-5/3=k^-2/3)
-    k0scale = 1 #3e-2
-    ax.plot(k0,k0scale*k0**(-2/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-2/3}}$')
+    k1scale = 1e1 #3e-2
+    ax.plot(k1,k1scale*k1**(-5/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-5/3}}$')
     # pentes en -3 (k*k^-3=k^-2)
-    k0scale = 1e2 #3e-2
-    ax.plot(k0,k0scale*k0**(-2),color='gray',linewidth=3,linestyle='-',label=r'$\mathbf{k^{-2}}$')
+    k0scale = 5e3 #3e-2
+    ax.plot(k0,k0scale*k0**(-3),color='gray',linewidth=3,linestyle='-',label=r'$\mathbf{k^{-3}}$')
 
     
     #plt.plot(k_v,3e-2*k_v**(-2/3.),color='gray',linewidth=5,label=r'$\mathbf{k^{-2/3}}$')
@@ -507,15 +614,19 @@ def plot_spectra(k_v,y1a,fig_name2\
     plot_tools.adjust_spines(ax, spines,width_spines)
 
     xstring = r'$\mathbf{k \;(rad.km^{-1})}$'
-    ystring = r'$\mathbf{k \times S_{w}\!(k)/ \sigma_{w}^2}$'
+#    ystring = r'$\mathbf{k \times S_{w}\!(k)/ \sigma_{w}^2}$'
+    ystring = r'$\mathbf{S_{w}\!(k)/ \sigma_{w}^2}$'
+
     plot_tools.legend_fig(xstring,ystring,size_leg,size_ticks)
+
     
-    plt.ylim(top=5e0)
-    plt.ylim(bottom=5e-4)
+    plt.ylim(top=5e-1)
+    plt.ylim(bottom=5e-5)
 
     plt.yscale('log')
     plt.xscale('log')
-    plt.grid(b=1, which='both', axis='both')
+    #plt.grid(b=1, which='both', axis='both')
+    plt.grid(which='both', axis='both')
     #---
 
     secax = ax.secondary_xaxis('top', functions=(lamb2k, lamb2k))
@@ -547,7 +658,7 @@ def contour_length(x,y,data,
                 pathfig='./',namefig='namefig',\
                 title='title',zminmax=None,\
                 PBLheight=None,relzi=False,\
-                cmap0='cividis',\
+                cmap0='cividis',plot2D=True,\
                 lvl=[0.,4.,0.1,1.],\
                 xsize = (8,6),fts=16):
     # lvl give levels (max,min) + interval color + interval contour
@@ -573,27 +684,32 @@ def contour_length(x,y,data,
     
     # Plot contourf data
     fig    = plt.figure(); ax    = fig.add_subplot()
-    CS     = plt.pcolormesh(xx,yy,data,cmap=cmap,norm=norm)
-    plt.colorbar(CS)
-    CS2    = plt.contour(xx,yy,data,colors='k',linestyles='dashed',\
-                         levels=levels_contour,linewidth = 1)
+    if plot2D:
+        CS     = plt.pcolormesh(xx,yy,data,cmap=cmap,norm=norm)
+        plt.colorbar(CS)
+        CS2    = plt.contour(xx,yy,data,colors='k',linestyles='dashed',\
+                             levels=levels_contour,linewidth = 1)
+        t = 'zi' if relzi else ''
+        fmt0=lambda x: f'{x:.0f}'+t
+        ax.clabel(CS2, CS2.levels, inline=True, fontsize=10,fmt=fmt0)
+    else:
+        CS     = plt.plot(x,data,color='k',linewidth = 1)
+        if (np.sign(data.min())!=np.sign(np.nanmax(data.max()))):
+            ax.axhline(y=0, color='k', linestyle='--',linewidth=1)
+        
     #ax.clabel(CS2, CS2.levels, inline=True, fmt=fmt, fontsize=10)
     
-    t = 'zi' if relzi else ''
-    fmt0=lambda x: f'{x:.0f}'+t
-    ax.clabel(CS2, CS2.levels, inline=True, fontsize=10,fmt=fmt0)
     
     
-    # Plot PBL height
-    if PBLheight is not None:
-        ax.plot(x,PBLheight,'r--')
-    
-    ax.set_xlim([0,max(x)])
-    if zminmax is not None:
-        ax.set_ylim(zminmax)
-    
-    ax.set_xlabel(labelx,fontsize=fts)
-    ax.set_ylabel(labely,fontsize=fts)
+    if plot2D:
+        # Plot PBL height
+        if PBLheight is not None:
+            ax.plot(x,PBLheight,'r--')
+        ax.set_xlim([0,max(x)])
+        if zminmax is not None:
+            ax.set_ylim(zminmax)
+        ax.set_xlabel(labelx,fontsize=fts)
+        ax.set_ylabel(labely,fontsize=fts)        
     
     plt.title(title)
     
