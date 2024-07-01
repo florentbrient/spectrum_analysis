@@ -8,11 +8,15 @@ Created on Mon Oct 23 16:52:24 2023
 import numpy as np
 import Constants as CC
 from scipy import integrate
+from scipy import ndimage
 import netCDF4 as nc
 from netCDF4 import Dataset
 import gc
 import os
 import scipy.stats as st
+from copy import deepcopy
+import scipy as sp
+from scipy.spatial import cKDTree
 
 # test speed up savefig
 from PIL import Image
@@ -126,11 +130,100 @@ def infocas(model,vers='v5.5.1',dx='?',dz='?'):
     return textcas
 
 
+# Infos for figures
+def infosfigures(cas, var, mtyp='Mean',relative=False):
+   cmaps   = {'Mean':'Greys_r','Anom':'RdBu_r'} # by default
+
+   # Switch color label
+   switch = []
+   # switch  = ['RNPM','RVT']
+   if var in switch:
+       cmaps['Anom'] = cmaps['Anom'].split('_')[0]
+   # Grey color
+   greyvar = ['Reflectance']
+   if var in greyvar:
+     cmaps['Mean'] = 'Greys_r'
+
+   zmin  = 0
+   # km
+   zmax  = {'IHOP':2, 'FIRE':1.0, 'BOMEX':2, 'ARMCU':2}
+   if relative:
+       zmax = {'IHOP':2, 'FIRE':1.5, 'BOMEX':3, 'ARMCU':3}
+
+   vrang = {}
+   vrang['Mean'] = {'WT':[-5.0,5.0,0.2],
+                    'LWP':[0.00,0.14,0.002],
+                    'RNPM'  :[0.005,0.01,0.0002],
+                    'WINDSHEAR' :[0.,1.,0.02],
+                    'REHU':[0.5,0.8,0.01],
+                    'Reflectance' :[0.1,1.,0.01],
+                    'THLM' : [298,306,2],
+                    'RCT' : [0,0.0007,1e-5],
+                    'DIVUV': [-0.006,0.009,0.003],
+                    'VORTZ': [-0.01,0.01,0.001],
+                    }
+   vrang['Anom'] = {'WT'   :[-0.8,0.8,0.05],
+                    'DIVUV':[-0.05,0.05,0.005],
+                    'THV'  :[-1.0,0.6,0.02],
+                    'THLM' :[-1.0,1.0,0.02],
+                    'RNPM' :[-0.002,0.002,0.0001],
+                    'REHU' :[-0.15,0.15,0.005],
+                    'PABST':[-2,2,0.1]
+                    }
+
+   # Modified range for some case
+   modif = {}
+   modif['BOMEX'] = {'THV':0.2,'PABST':0.2}
+   modif['FIRE']  = {'RNPM':0.2}
+
+   zminmax = None
+   if cas in zmax.keys():
+     zminmax=[zmin,zmax[cas]]
+
+   levels = None
+   if var in vrang[mtyp].keys():
+     vmin,vmax,vdiff = vrang[mtyp][var][:]
+     mr = 1
+     if cas in modif.keys():
+         if var in modif[cas].keys():
+             mr=modif[cas][var]
+     print('Range : ',vmin,vmax,vdiff,var,find_offset(var),mr)
+     vmin,vmax,vdiff = [ij*find_offset(var)*mr for ij in (vmin,vmax,vdiff)]
+     nb              = abs(vmax-vmin)/vdiff+1
+     levels          = [vmin + float(ij)*vdiff for ij in range(int(nb))]
+
+   infofig = {}
+   infofig['cmap']    = cmaps #[mtyp]
+   infofig['zminmax'] = zminmax
+   infofig['levels']  = levels
+   return infofig
+
+# Offset
 def find_offset(var):
-    offset = 1.
-    if var in ('RVT','RNPM','RCT'):
-        offset = 1000.
-    return offset
+    offset = {}
+    var1000=['LWP','IWP','RC','RT','RVT','RCT','RNPM']
+    for ij in var1000:
+       offset[ij] = 1000.
+    var100 =['lcc','mcc']
+    for ij in var100:
+       offset[ij] = 100.
+    
+    rho0=1.14; RLVTT=2.5e6;RCP=1004.
+    offset['E0']=rho0*RLVTT
+    offset['Q0']=rho0*RCP
+    offset['DTHRAD']=86400.
+
+    off    = 1.
+    if var in offset.keys():
+       off = offset[var]
+    return off
+
+
+#def find_offset(var):
+#    offset = 1.
+#    if var in ('RVT','RNPM','RCT'):
+#        offset = 1000.
+#    return offset
 
 def findlevels(var, Anom, model=None):
     levels = {}; tmp=None
@@ -480,3 +573,144 @@ def opennetcdf(file_netcdf,datach):
     del ncfile
 
     return hourspectra,level,hours,data
+
+# Object
+def svttyp(case,sens):
+   nbplus     = 0
+   svt        = {}
+   svt['FIRE']={'All'}
+   svt['IHOP']={'IHODC','IHOP5'}
+   svt['IHOPNW']={'All'}
+   svt['AYOTTE']={'All'}
+   svt['FIREWIND']={'All'}
+   svt['FIRENOWIND']={'All'}
+   if case in svt.keys():
+     if sens in svt[case] or 'All' in svt[case]:
+       nbplus=1
+   return nbplus
+
+def def_object(nbplus=0,AddWT=0):
+  # Routine that discriminate object in terms of
+  # conditional sampling m (m=2 -> 1 s.t.d.)
+  # minimum volume Vmin (Vmin = )
+  #thrs   = 1
+  #thch   = str(thrs).zfill(2)
+  #nbmin  = 100 #100 #1000
+  objtyp = ['updr','down','down','down']
+  objnb  = ['001' ,'001' ,'002' ,'003' ]
+  if nbplus == 1:
+     objnb = [str(int(ij)+3).zfill(3) for ij in objnb]
+     
+  WTchar=['' for ij in range(len(objtyp))]
+  if AddWT  == 1:
+    WTchar = ['_WT','_WT','_WT','_WT']
+  
+  typs = [field+'_SVT'+objnb[ij]+WTchar[ij] for ij,field in enumerate(objtyp)]
+  print(typs)
+  return typs, objtyp
+
+def do_unique(tmp):
+    tmp[tmp>0]=1
+    return tmp
+
+def delete_smaller_than(mask,obj,minval):
+  sizes = ndimage.sum(mask,obj,np.unique(obj[obj!=0]))
+  del_sizes = sizes < minval
+  del_cells = np.unique(obj[obj!=0])[del_sizes]
+  # new version
+  ss        = obj.shape
+  objf      = obj.flatten()
+  ind       = np.in1d(objf,del_cells)
+  objf[ind] = 0
+  obj       = objf.reshape(ss)
+  return obj
+
+def do_delete2(objects,mask,nbmin,rename=True,clouds=None):
+    nbmax   = np.max(objects)
+    print(nbmax,nbmin)
+    #time1 = time.time()
+    objects = delete_smaller_than(mask,objects,nbmin)
+    #time2 = time.time()
+    #print('%s function took %0.3f ms' % ("delete smaller", (time2-time1)*1000.0))
+    if clouds is not None:
+        print('filter clouds not None')
+        objects = delete_clouds(objects,clouds)
+
+    #print np.max(objects),len(np.unique(objects))
+    if rename :
+        labs = np.unique(objects)
+        objects = np.searchsorted(labs, objects)
+    nbr = len(np.unique(objects))-1 # except 0
+    print('\t', nbmax - nbr, 'objects were too small')
+    return objects,nbr
+
+def delete_clouds(obj,cld,min=1):
+    #mask       = do_unique(deepcopy(obj))
+    maskclouds = do_unique(deepcopy(cld))
+    maskclouds *= obj
+    del_cells  = np.unique(maskclouds[maskclouds!=0])
+    print('del cells : ', del_cells)
+    print('unique : ',np.unique(obj[obj!=0]))
+    
+    # Remove all object that have clouds
+    ss        = obj.shape
+    objf      = obj.flatten()
+    ind       = np.in1d(objf,del_cells)
+    objf[ind] = 0
+    obj       = objf.reshape(ss)
+    
+    return obj
+
+def find_nearest_neighbors(data, size=None):
+    # From cloudmetrics
+    # FIXME not sure if boxsize (periodic BCs) work if domain is not square
+    tree = cKDTree(data, boxsize=size)
+    dists = tree.query(data, 10)
+    #print('dists ',dists.shape,dists)
+    nn_dist = np.sort(dists[0][:, 1])
+    return nn_dist
+
+def neighbor_distance(cloudproperties, mindist=0):
+    """Calculate nearest neighbor distance for each cloud.
+       periodic boundaries
+
+    Note: 
+        Distance is given in pixels.
+
+    See also: 
+        :class:`scipy.spatial.cKDTree`:
+            Used to calculate nearest neighbor distances. 
+
+    Parameters: 
+        cloudproperties (list[:class:`RegionProperties`]):
+            List of :class:`RegionProperties`
+            (see :func:`skimage.measure.regionprops` or
+            :func:`get_cloudproperties`).
+        mindist
+            Minimum distance to consider between centroids.
+            If dist < mindist: centroids are considered the same object
+
+    Returns: 
+        ndarray: Nearest neighbor distances in pixels.
+    """
+    centroids = [prop.centroid for prop in cloudproperties]
+    indices   = np.arange(len(centroids))
+    neighbor_distance = np.zeros(len(centroids))
+    centroids_array = np.asarray(centroids)
+
+    for n, point in enumerate(centroids):
+        #print n, point
+        # use all center of mass coordinates, but the one from the point
+        mytree = sp.spatial.cKDTree(centroids_array[indices != n])
+        dist, indexes = mytree.query(point,k=len(centroids)-1)
+        #ball  =  mytree.query_ball_point(point,mindist)
+        distsave=dist[dist>mindist]   
+        #print distsave
+
+        #if abs(centroids_array[indexes[0]][0]-point[0])>100.:
+        #  print centroids_array[indexes[0]]
+        #  print n,point#,[centroids_array[ij] for ij in indexes]
+
+        neighbor_distance[n] = distsave[0]
+
+    return neighbor_distance

@@ -14,7 +14,7 @@ import cloudmetrics as cm
 
 # Generate a 2D synthetic signal (image)
 N, M = 256, 256
-dpi=9
+dpi=4
 # 10 cycles
 x = np.linspace(0, dpi * 2*np.pi, N)
 y = np.linspace(0, dpi * 2*np.pi, M)
@@ -28,7 +28,7 @@ X, Y = np.meshgrid(x, y)
 f2 = np.cos(X) + np.cos(Y)
 #f=(f+f2)/2.
 
-f+=0.5*np.random.random((N,N))
+f+=0*np.random.random((N,N))
 
 # Compute the 2D FFT
 F = np.fft.fft2(f)
@@ -114,7 +114,7 @@ ax2.set_xlabel('u')
 ax2.set_ylabel('v')
 
 # Reconstructed signal
-ax3.imshow(f_reconstructed, extent=(0, 4 * np.pi, 0, 4 * np.pi))
+ax3.imshow(f_reconstructed) #, extent=(0, 4 * np.pi, 0, 4 * np.pi))
 ax3.set_title('Reconstructed Signal')
 ax3.set_xlabel('x')
 ax3.set_ylabel('y')
