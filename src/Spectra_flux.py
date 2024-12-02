@@ -20,13 +20,13 @@ from skimage import measure
 import cloudmetrics as cm
 import scipy.spatial.distance as sd
 from scipy.stats.mstats import gmean
-import cloudmetrics as cm
 import cm_spectral as spec
+from Test_injection_rate import test_injection_rate2D
 
 
 def plot_flux(k,E,PI,kPBL=None,Euv=None,\
               y1lab='xlab',y2lab='ylab',\
-              namefig='namefig',\
+              namefig='namefig',plotlines=False,\
               xsize=(10,18),fts=18,lw=2):
     
     # Start plot 
@@ -37,6 +37,38 @@ def plot_flux(k,E,PI,kPBL=None,Euv=None,\
     if kPBL is not None:
         ax1.axvline(x=kPBL,color='k',ls='--')
     #ax1.loglog([6*kv2.max(),kv2.max()],[(6*kv2.max())**(-5/3),kv2.max()**(-5/3)],'k--')
+
+    if plotlines:
+        k0max=k.max()
+        k0min=k0max/2
+        k1max=k0max/2
+        k1min=k0max/8
+        k0 = np.linspace(k0min,k0max,1000)#*1000.
+        k1 = np.linspace(k1min,k1max,1000)#*1000.
+        
+        # pentes en -2/3 (k*k^-5/3=k^-2/3)
+        k1scale = 3e-2
+        ax1.plot(k1,k1scale*k1**(-5/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-5/3}}$')
+        # pentes en -3 (k*k^-3=k^-2)
+        k0scale = 3e-3
+        ax1.plot(k0,k0scale*k0**(-3),color='gray',linewidth=3,linestyle='-',label=r'$\mathbf{k^{-3}}$')
+    
+        # legends
+    #    lines = plt.gca().get_lines()
+        #lines = ax1.get_lines()
+        #print(len(lines))
+        #include = np.arange(0,len(lines)-2) #[0,1]
+        #includeslope = np.arange(len(lines)-2,len(lines))
+        #print('lines ',[lines[i].get_label() for i in include])
+    
+        #legend1 = ax1.legend([lines[i] for i in include],[lines[i].get_label() for i in include],
+        #                     title=None,shadow=True,numpoints=1,loc=2,bbox_to_anchor=(1.,0.85),
+        #                     fontsize=15,title_fontsize=20)
+        ax1.legend(title=None,shadow=True,numpoints=1,loc=2,
+                             bbox_to_anchor=(0.2,0.2),
+                             fontsize=12,title_fontsize=20)
+
+
     ax1.set_title('Original Signal')
     ax1.set_xlabel('Wavenumber')
     ax1.set_ylabel(y1lab)
@@ -92,9 +124,10 @@ def compute_gradients(u, v, w, dx, dy, dz):
 
     return du_dx, dv_dx, dw_dx, du_dy, dv_dy, dw_dy, du_dz, dv_dz, dw_dz
 
-def compute_uBF(U,kk=None,dx=1,dy=1):
+def compute_uBF(U,kk=None,dx=1,dy=1,filter=0):
     # Return low-pass filtered U for different k
     # Two methods
+    # filter = 0 => All
     
     
     # Create the frequency grid (2D)
@@ -117,6 +150,7 @@ def compute_uBF(U,kk=None,dx=1,dy=1):
     #stop
     
     # Compute low-pass filtered (2D)
+    print('** start U_hat **')
     U_hat = np.fft.fft2(U)
     
     # Apply the filter in the frequency domain
@@ -131,6 +165,7 @@ def compute_uBF(U,kk=None,dx=1,dy=1):
     
     for idx,k_idx in enumerate(kk):
         
+        print(idx,k_idx)
         # Filter 1
         U_hatf = U_hat.copy()
         #plt.imshow(np.abs(U_hatf)**2., norm=LogNorm(), aspect='auto')
@@ -143,11 +178,12 @@ def compute_uBF(U,kk=None,dx=1,dy=1):
         
         Uf = np.fft.ifftn(U_hatf)
             
-        # Filter 2 : Create the Gaussian low-pass filter
-        filter_hat = np.exp(-(k**2) / (2 * k_idx**2))
-        #plt.plot(filter_hat)
-        U_hatf2 = U_hat * filter_hat
-        Uf2 = np.fft.ifftn(U_hatf2)
+        if filter >0:
+            # Filter 2 : Create the Gaussian low-pass filter
+            filter_hat = np.exp(-(k**2) / (2 * k_idx**2))
+            #plt.plot(filter_hat)
+            U_hatf2 = U_hat * filter_hat
+            Uf2 = np.fft.ifftn(U_hatf2)
         
         if idx==0: # Save
             Uf_k  = np.array(len(kk)*[np.zeros(Uf.shape)])
@@ -157,7 +193,8 @@ def compute_uBF(U,kk=None,dx=1,dy=1):
         #Uf  -= np.mean(Uf)
         #Uf2 -= np.mean(Uf2)
         
-        Uf_k[idx,:,:],Uf2_k[idx,:,:] = Uf,Uf2
+        Uf_k[idx,:,:]=Uf
+        Uf2_k[idx,:,:]=Uf2
         
         if pltcont:
             fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
@@ -180,26 +217,37 @@ def compute_uBF(U,kk=None,dx=1,dy=1):
 
 
 # Path of the file
-path0="/home/fbrient/GitHub/objects-LES/data/"
-case ='IHOPNW';sens='IHOP0';prefix='006';vtype='V0001';nc4='nc';OUT='OUT.'
-#case ='IHOP';sens='Ru0x0';prefix='004';vtype='V0301';nc4='nc4';OUT=''
-#case ='FIRE';sens='Ls2x0';prefix='021';vtype='V0301';nc4='nc4';OUT=''
-case ='BOMEX';sens='Ru0NW';prefix='008';vtype='V0301';nc4='nc4';OUT=''
-
+vtyp = 'V5-5-1'
 vtyp = 'V5-7-0'
-if OUT=='':
-    vtyp = 'V5-5-1'
+
+
+if vtyp == 'V5-5-1':
+    path0="/home/fbrient/GitHub/objects-LES/data/"
+    case ='IHOPNW';sens='IHOP0';prefix='006';vtype='V0001';nc4='nc';OUT='OUT.'
+    #case ='IHOP';sens='trlRu0x0';prefix='004';vtype='V0301';nc4='nc4';OUT=''
+    case ='FIRE';sens='Ls2x0';prefix='024';vtype='V0301';nc4='nc4';OUT=''
+    #case ='BOMEX';sens='Ru0NW';prefix='012';vtype='V0301';nc4='nc4';OUT=''
+    path    = path0+case+'/'+sens+'/'
+    file    = 'sel_'+sens+'.1.'+vtype+'.'+OUT+prefix+'.'+nc4
+    var1D  = ['vertical_levels','S_N_direction','W_E_direction'] #Z,Y,X
+elif vtyp == 'V5-7-0':
+    path0="/home/fbrient/MNH/"+vtyp+"/"
+    case ='FIRE3D';sens='FI1024';prefix='FIR1k'
+    vtype='V0001';time='002';nc4='nc';OUT='OUT.'    
+    path    = path0+case+'/'+sens+'/'
+    # FIR1k.1.V0001.OUT.002.nc
+    file    = prefix+'.1.'+vtype+'.'+OUT+time+'.'+nc4
+    var1D  = ['level','nj','ni'] #Z,Y,X
+
+
 
     
-path    = path0+case+'/'+sens+'/'
-file    = 'sel_'+sens+'.1.'+vtype+'.'+OUT+prefix+'.'+nc4
 file    = path+file
 
 # Open the netcdf file
 DATA    = nc.Dataset(file,'r')
 
 # Dimensions
-var1D  = ['vertical_levels','S_N_direction','W_E_direction'] #Z,Y,X
 namez  = var1D[0]
 data1D,nzyx,sizezyx = [OrderedDict() for ij in range(3)]
 for ij in var1D:
@@ -216,8 +264,8 @@ dz.insert(-1,ALT[-1]-ALT[-2])
 nxnynz = np.array([nxny*ij for ij in dz]) # volume of each level
 nxnynz = np.repeat(np.repeat(nxnynz[:, np.newaxis, np.newaxis]
                              , sizezyx[var1D[1]], axis=1), sizezyx[var1D[2]], axis=2)
-dx     = nzyx['W_E_direction']
-dy     = nzyx['S_N_direction']
+dx     = nzyx[var1D[1]]
+dy     = nzyx[var1D[2]]
 
 
 # Find Boundary-layer height (zi)
@@ -230,18 +278,29 @@ kPBL      = 2*np.pi/PBLheight
 
 
 # Vertical velocity fiels
-UT = DATA['UT']
-VT = DATA['VT']
-WT = DATA['WT']
+UT = np.squeeze(DATA['UT'])
+VT = np.squeeze(DATA['VT'])
+WT = np.squeeze(DATA['WT'])
+
+# Substract horizontal mean
+Anom = ''
+anomHor = True
+if anomHor:
+    UT = tl.anomcalc(UT)
+    VT = tl.anomcalc(VT)
+    WT = tl.anomcalc(WT)
+    Anom = '_Anom'
 
 # Calulate U grad U
 # UT*(dUT/dX + dVT/dX + dWT/dX)
 # +VT*(dUT/dY + dVT/dY + dWT/dY)
 # +WT*(dUT/dZ + dVT/dZ + dWT/dZ)
 
-x=data1D['W_E_direction']
-y=data1D['S_N_direction']
-z=data1D['vertical_levels']
+x,y,z=[data1D[ij] for ij in var1D]
+
+#x=data1D['W_E_direction']
+#y=data1D['S_N_direction']
+#z=data1D['vertical_levels']
 
 #[dUT_dx,dUT_dy]=np.gradient(UT,x,y)
 #[dVT_dx,dVT_dy]=np.gradient(VT,x,y)
@@ -276,9 +335,15 @@ ugrad_vz = UT*dvz_dx+VT*dvz_dy+WT*dvz_dz
         
 
 # Z of interest (zi/2 for instance)
-fraczi = 0.9
+fracmax = 1.2
+if 'BOMEX' in case:
+    fracmax = 2.5
 
-for fraczi in np.arange(0,1.2,0.1):
+#fracziall = np.arange(0,fracmax,0.1)
+fracziall = np.arange(0.4,0.6,0.1)
+for iz,fraczi in enumerate(fracziall):
+    print('***')
+    print('Start loop for ',fraczi)
     idx    = int(fraczi*idxzi)
     
     # Compute U_vect
@@ -286,6 +351,14 @@ for fraczi in np.arange(0,1.2,0.1):
     kv2, E_1d_rad, E_1d_azi = spec.compute_spectra(
         [UT2D,VT2D,WT2D],dx=dx,periodic_domain=True,apply_detrending=False,
         window=None,fact=0.5)
+    
+    # It doesn't work
+    #test_injection_rate2D(UT2D,VT2D,dx=dx,dy=dy,k=kv2)
+    #stop
+    
+    variance2D = np.trapz(E_1d_rad, x=kv2)
+    print('variance 2D ',variance2D)
+    print('variance real ',np.var(0.5*(UT2D**2.+VT2D**2.+WT2D**2.)) )
     
     kv2b, Euv_1d_rad, Euv_1d_azi = spec.compute_spectra(
         [UT2D,VT2D],dx=dx,periodic_domain=True,apply_detrending=False,
@@ -299,25 +372,33 @@ for fraczi in np.arange(0,1.2,0.1):
     
     # Energy
     # Calculate the low-pass filtered velocity field
-    kk,Uf_k,Uf2_k = compute_uBF(UT2D,kk=kv2,dx=dx,dy=dy)
-    kk,Vf_k,Vf2_k = compute_uBF(VT2D,kk=kv2,dx=dx,dy=dy)
-    kk,Wf_k,Wf2_k = compute_uBF(WT2D,kk=kv2,dx=dx,dy=dy)
+    
+    print('Start compute Low Freq U,V,W')
+    kk,Uf_k,Uf2_k = compute_uBF(UT2D,kk=kv2,dx=dx,dy=dy,filter=1)
+    kk,Vf_k,Vf2_k = compute_uBF(VT2D,kk=kv2,dx=dx,dy=dy,filter=1)
+    kk,Wf_k,Wf2_k = compute_uBF(WT2D,kk=kv2,dx=dx,dy=dy,filter=1)
     
     # Enstrophy
     # Calculate the low-pass filtered vorticity field
+    print('Start compute Low Freq VORTICITY')
     kk,VORTXf_k,VORTXf2_k = compute_uBF(VORTX2D,kk=kv3,dx=dx,dy=dy)
     kk,VORTYf_k,VORTYf2_k = compute_uBF(VORTY2D,kk=kv3,dx=dx,dy=dy)
     kk,VORTZf_k,VORTZf2_k = compute_uBF(VORTZ2D,kk=kv3,dx=dx,dy=dy)
     
+    # Initiate
+    if iz == 0:
+        PI_E = np.empty((len(fracziall),len(kk)))
+        PI_Z = np.empty((len(fracziall),len(kk)))
     
     
     # Calculate the non-linear energy flux
-    PI_E = np.zeros(len(kk))
+    print('Start compute non-linear energy flux')
     for idxk,k_idx in enumerate(kk):
         tmp_PI = Uf_k[idxk,:,:]*ugradu[idx,:,:]+\
                  Vf_k[idxk,:,:]*ugradv[idx,:,:]+\
                  Wf_k[idxk,:,:]*ugradw[idx,:,:]
-        PI_E[idxk] = np.mean(tmp_PI)
+        PI_E[iz,idxk] = np.mean(tmp_PI)
+    del tmp_PI
     
     #v2
     #PI_E2 = np.zeros(len(kk))
@@ -328,12 +409,13 @@ for fraczi in np.arange(0,1.2,0.1):
     #    PI_E2[idxk] = np.mean(tmp_PI)    
         
     # Calculate the non-linear enstrophy flux
-    PI_Z = np.zeros(len(kk))
+    print('Start compute non-linear enstrophy flux')
     for idxk,k_idx in enumerate(kk):
         tmp_PI = VORTXf_k[idxk,:,:]*ugrad_vx[idx,:,:]+\
                  VORTYf_k[idxk,:,:]*ugrad_vy[idx,:,:]+\
                  VORTZf_k[idxk,:,:]*ugrad_vz[idx,:,:]
-        PI_Z[idxk] = np.mean(tmp_PI)
+        PI_Z[iz,idxk] = np.mean(tmp_PI)
+    del tmp_PI
     
     # Start plot 
     pathfig="../figures/"+vtyp+"/3D/"
@@ -343,17 +425,29 @@ for fraczi in np.arange(0,1.2,0.1):
     
     namefig=pathfig+'XXXX_'+case+'_'+prefix+'_'+"{:.0f}".format(100*fraczi)
     
-    plot_flux(kv2,E_1d_rad,PI_E,kPBL=kPBL,Euv=Euv_1d_rad,\
-                  y1lab='E(k)',y2lab='Pi_E_v1',namefig=namefig)
+    plot_flux(kv2,E_1d_rad,PI_E[iz,:],kPBL=kPBL,Euv=Euv_1d_rad,\
+                  y1lab='E(k)',y2lab='PiE'+Anom,
+                  plotlines=True,namefig=namefig)
     
-    plot_flux(kv3,Ez_1d_rad,PI_Z,kPBL=kPBL,\
-                  y1lab='Z(k)',y2lab='Pi_Z_v1',namefig=namefig)
+    plot_flux(kv3,Ez_1d_rad,PI_Z[iz,:],kPBL=kPBL,\
+                  y1lab='Z(k)',y2lab='PiZ'+Anom,namefig=namefig)
     
     #plot_flux(kv2,E_1d_rad,PI_E2,kPBL=kPBL,Euv=Euv_1d_rad,\
     #              y1lab='E(k)',y2lab='Pi_E_v2',namefig=namefig)    
-    
-    
-        
+
+
+NZ = len(fracziall)
+colors = plt.cm.Reds_r(np.linspace(0, 1, NZ))
+fig, ax1 = plt.subplots(1, 1, figsize=(12,10))
+for iz,fraczi in enumerate(fracziall):
+    plt.semilogx(kv2,PI_E[iz,:],color=colors[iz])
+ax1.axhline(y=0,color='k')
+ax1.set_xlabel('Wavenumber')
+ax1.set_ylabel('Pi_E')
+namefig=pathfig+'XXXX_'+case+'_'+prefix
+namefig=namefig.replace('XXXX','PiE'+Anom+'_all')+'.png'
+tl.savefig2(fig, namefig)
+plt.close()  
     
  
 
