@@ -24,13 +24,52 @@ import cm_spectral as spec
 from Test_injection_rate import test_injection_rate2D
 import gc
 from  test_structure_functions import *
+import random
 
+
+def plot_structure_function(freq,power_spectrum,SS,\
+                            nx,r_values,\
+                            namefig='namefig',plotlines=False,\
+                            xsize=(18,10),fts=18,lw=2):
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=xsize)
+    
+    dkf   = 2*np.pi*(freq.max()*4./nx) #frequency step : 2*fs/N
+    kfreq = 2*np.pi*(freq)
+    ax1.loglog(kfreq, np.mean(power_spectrum,axis=0))
+    k1scale = 3e-1
+    kfreq_plot=kfreq[((kfreq>kh) & (kfreq<kfreq.max()-4*dkf))]
+    ax1.plot(kfreq_plot,k1scale*kfreq_plot**(-5/3.),\
+             color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-5/3}}$')
+    ax1.axvline(x=kh,color='k',linestyle='--')
+    ax1.set_xlabel('Wavenumber [m^-1]')
+    ax1.set_ylabel('Power Spectrum')
+    ax1.set_title('Wind Velocity')
+    
+    # Structure Function as S(r)
+    #k_values = 2 * np.pi / r_values
+    khr      = kh*r_values/(2*np.pi)
+    ax2.semilogx(khr, np.mean(SS,axis=0), marker='o')
+    ax2.axhline(y=0,color='k')
+    ax2.axvline(x=1,color='k',linestyle='--')
+    #plt.xlabel('Wavenumber k [1/m]')
+    #plt.xlabel('Radius r [m]')
+    ax2.set_xlabel('r*(k_h/2pi) [-]')
+    ax2.set_ylabel('S_3')
+    ax2.set_title('Third-Order Structure Function')
+    
+    namefig+='.png'
+    tl.savefig2(fig, namefig)
+    plt.close()
+    
+    
+    return None
 
 
 def plot_flux(k,E,PI,kPBL=None,Euv=None,\
               y1lab='xlab',y2lab='ylab',\
               namefig='namefig',plotlines=False,\
-              xsize=(10,18),fts=18,lw=2):
+              xsize=(14,18),fts=18,lw=2):
     
     # Start plot 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=xsize)
@@ -223,7 +262,7 @@ def compute_uBF(U,kk=None,dx=1,dy=1,filter=0):
 
 # Path of the file
 vtyp = 'V5-5-1'
-#vtyp = 'V5-7-0'
+vtyp = 'V5-7-0'
 
 
 if vtyp == 'V5-5-1':
@@ -338,15 +377,32 @@ if enstrophy:
     ugrad_vy = UT*dvy_dx+VT*dvy_dy+WT*dvy_dz
     ugrad_vz = UT*dvz_dx+VT*dvz_dy+WT*dvz_dz
     ############
-        
+      
+    
+# Kh: wavenumnber of the boundary layer height
+kh=2*np.pi/ALT[idxzi]
+    
+# Information for computing structure functions
+sampling_rate = 1/dx
+nx            = UT.shape[-1]
+nr            = 100 # How much distance to compute lagged distance, structure 
+r_values      = np.linspace(1, nr, nr)*dx  # Lag distances to evaluate S(r)
+nc            = 100 # How many "samples" are averaged?
+ilines        = random.sample(list(np.linspace(0,nx-1,nx).astype(int)),nc)
+    
+# Start plot 
+pathfig="../figures/"+vtyp+"/3D/"
+pathfig+=case+'/';tl.mkdir(pathfig)
+pathfig+=sens+'/';tl.mkdir(pathfig)
+pathfig+='Spectral_flux/';tl.mkdir(pathfig)
 
 # Z of interest (zi/2 for instance)
 fracmax = 1.2
 if 'BOMEX' in case:
     fracmax = 2.5
 
-fracziall = np.arange(0,fracmax,0.1)
-#fracziall = np.arange(0.4,0.6,0.1)
+#fracziall = np.arange(0,fracmax,0.1)
+fracziall = np.arange(0.7,0.8,0.1)
 for iz,fraczi in enumerate(fracziall):
     print('***')
     print('Start loop for ',fraczi)
@@ -364,30 +420,43 @@ for iz,fraczi in enumerate(fracziall):
     
     # Test compute structure function
     # Compute power spectrum
-    sampling_rate = dx
-    iline    = 120
-    UT2Dline = UT2D[iline,:]
-    freq, power_spectrum = compute_power_spectrum(UT2Dline, sampling_rate)
-    # Compute structure function
-    r_values = np.linspace(1, 10, 10)*dx  # Lag distances to evaluate S(r)
-    S_r = compute_structure_function(UT2D, x, r_values)
-    # Power Spectrum
-    plt.subplot(1, 2, 1)
-    plt.loglog(freq, power_spectrum)
-    plt.xlabel('Frequency [Hz]')
-    plt.ylabel('Power Spectrum')
-    plt.title('Power Spectrum of Wind Velocity')
+    power_spectrum_u=np.zeros((nc,int(nx/2)+1))
+    Su_r            =np.zeros((nc,nr))
+    power_spectrum_v=np.zeros((nc,int(nx/2)+1))
+    Sv_r            =np.zeros((nc,nr))
+    power_spectrum_w=np.zeros((nc,int(nx/2)+1))
+    Sw_r            =np.zeros((nc,nr))
+    for il,iline in enumerate(ilines):
+        # different cases
+        # U along x, V along y
+        # U along y, V along y
+        UT2Dline = UT2D[iline,:] # U along x
+        VT2Dline = VT2D[:,iline] # V along y
+        WT2Dline = WT2D[iline,:] # W along x
+        # The frequency domain will span from 0 to fs/2 in spatial frequencies (Nyquist frequency),
+        freq, power_spectrum_u[il,:] = compute_power_spectrum(UT2Dline, sampling_rate,nperseg=nx)
+        #Pour info: 2*np.pi*freq.max() = kv2.max()
+        # Compute structure function
+        Su_r[il,:] = compute_structure_function(UT2Dline, x, r_values)
+        freq, power_spectrum_v[il,:] = compute_power_spectrum(VT2Dline, sampling_rate,nperseg=nx)
+        Sv_r[il,:] = compute_structure_function(VT2Dline, x, r_values)
+        freq, power_spectrum_w[il,:] = compute_power_spectrum(WT2Dline, sampling_rate,nperseg=nx)
+        Sw_r[il,:] = compute_structure_function(WT2Dline, x, r_values)
+        
+        
+
     
-    # Structure Function as S(r)
-    k_values = 2 * np.pi / r_values
-    plt.subplot(1, 2, 2)
-    plt.semilogx(k_values, S_r, marker='o')
-    plt.xlabel('Wavenumber k [1/m]')
-    plt.ylabel('S3(k)')
-    plt.title('Third-Order Structure Function S3 vs k')
-    
-    stop
-    
+    # Plot Power Spectrum
+    namefig=pathfig+'S3u_'+case+'_'+prefix+'_'+"{:.0f}".format(100*fraczi)
+    plot_structure_function(freq,power_spectrum_u,Su_r,\
+                            nx,r_values,namefig=namefig)
+    namefig=pathfig+'S3v_'+case+'_'+prefix+'_'+"{:.0f}".format(100*fraczi)
+    plot_structure_function(freq,power_spectrum_v,Sv_r,\
+                            nx,r_values,namefig=namefig)
+    namefig=pathfig+'S3w_'+case+'_'+prefix+'_'+"{:.0f}".format(100*fraczi)
+    plot_structure_function(freq,power_spectrum_w,Sw_r,\
+                            nx,r_values,namefig=namefig)
+        
     
     
     variance2D = np.trapz(E_1d_rad, x=kv2)
@@ -460,11 +529,6 @@ for iz,fraczi in enumerate(fracziall):
             PI_Z[iz,idxk] = np.mean(tmp_PI)
         del tmp_PI
     
-    # Start plot 
-    pathfig="../figures/"+vtyp+"/3D/"
-    pathfig+=case+'/';tl.mkdir(pathfig)
-    pathfig+=sens+'/';tl.mkdir(pathfig)
-    pathfig+='Spectral_flux/';tl.mkdir(pathfig)
     
     namefig=pathfig+'XXXX_'+case+'_'+prefix+'_'+"{:.0f}".format(100*fraczi)
     

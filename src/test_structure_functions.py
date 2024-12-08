@@ -2,11 +2,11 @@ import numpy as np
 from scipy.signal import welch
 import matplotlib.pyplot as plt
 
-def compute_power_spectrum(u, sampling_rate):
+def compute_power_spectrum(u, sampling_rate,nperseg=256):
     """
     Compute the power spectrum using the Welch method.
     """
-    freq, power_spectrum = welch(u, fs=sampling_rate) #, nperseg=len(u)//8)
+    freq, power_spectrum = welch(u, fs=sampling_rate,nperseg=nperseg) #, nperseg=len(u)//8)
     return freq, power_spectrum
 
 def compute_structure_function(u, x, r_values):
@@ -18,7 +18,7 @@ def compute_structure_function(u, x, r_values):
         diffs = []
         for j in range(len(u) - 1):
             idx = np.searchsorted(x, x[j] + r)  # Find index for x[j] + r
-            #print(i,r,j,idx)
+            #print(i,r,j,idx,idx < len(u))
             if idx < len(u):
                 diff = u[idx] - u[j]
                 diffs.append(diff**3)
