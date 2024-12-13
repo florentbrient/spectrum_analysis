@@ -53,7 +53,7 @@ file    = path+file
 DATA    = nc.Dataset(file,'r')
 
 # Define pathfig
-pathfig = tls.mk_pathfig(pathfig0,vtyp,case,sens,func='Structures_function')
+pathfig = tls.mk_pathfig(pathfig0,case=case,sens=sens,func='Structures_function')
 # Name figure : S3u_FIRE3D_FIR1k_V0005_002_80
 namefig0=pathfig+'{XXX}_'+case+'_'+prefix+'_'+vtype+'_'+time+'_{ZZZ}'+'{NNN}'
     
