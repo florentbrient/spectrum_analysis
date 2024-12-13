@@ -487,7 +487,8 @@ def findpbltop(typ,DATA,var1D,idx=None,offset=0.25):
     else:
         temp   = np.nanmean(tmp,axis=(1,2,))
             
-    THLMint = integrate.cumtrapz(temp)/np.arange(1,len(temp))
+    #THLMint = integrate.cumtrapz(temp)/np.arange(1,len(temp))
+    THLMint = integrate.cumulative_trapezoid(temp)/np.arange(1,len(temp))
     #DT      = temp[:-1]-(THLMint+offset)
     # Modif
     DT      = temp[1:]-(THLMint+offset)
