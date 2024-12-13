@@ -11,12 +11,11 @@ from scipy.signal import welch
 from collections import OrderedDict
 import tools0 as tl
 import pylab as plt
-import matplotlib as mpl
-from matplotlib.colors import LogNorm
+#import gc
 
 
-def pathfig(vtyp,case='',sens='',func='Spectral_flux'):
-    pathfig="../figures/"+vtyp+"/3D/"
+def mk_pathfig(pathfig,case='',sens='',func='Spectral_flux'):
+    #pathfig="../figures/"+vtyp+"/3D/"
     pathfig+=case+'/';tl.mkdir(pathfig)
     pathfig+=sens+'/';tl.mkdir(pathfig)
     pathfig+=func+'/';tl.mkdir(pathfig)
@@ -119,6 +118,135 @@ def plot_structure_function(freq,power_spectrum,SS,nx,\
     namefig+='.png'
     tl.savefig2(fig, namefig)
     plt.close()
-    
-    
     return None
+
+
+def compute_gradients(u, v, w, dx, dy, dz):
+    # Compute gradients in the x-direction
+    du_dx = np.gradient(u, dx, axis=2)
+    dv_dx = np.gradient(v, dx, axis=2)
+    dw_dx = np.gradient(w, dx, axis=2)
+
+    # Compute gradients in the y-direction
+    du_dy = np.gradient(u, dy, axis=1)
+    dv_dy = np.gradient(v, dy, axis=1)
+    dw_dy = np.gradient(w, dy, axis=1)
+
+    # Compute gradients in the z-direction with varying dz
+    du_dz = np.zeros_like(u)
+    dv_dz = np.zeros_like(v)
+    dw_dz = np.zeros_like(w)
+    
+    for k in range(1, u.shape[0] - 1):
+        du_dz[k, :, :] = (u[k + 1, :, :] - u[k - 1, :, :]) / (2.*dz[k])
+        dv_dz[k, :, :] = (v[k + 1, :, :] - v[k - 1, :, :]) / (2.*dz[k])
+        dw_dz[k, :, :] = (w[k + 1, :, :] - w[k - 1, :, :]) / (2.*dz[k])
+    
+    # Handle the boundaries
+    #dz_0           = (dz[1] + dz[0])/2.
+    dz_0           = dz[0]
+    du_dz[0, :, :] = (u[1, :, :] - u[0, :, :]) / dz_0
+    dv_dz[0, :, :] = (v[1, :, :] - v[0, :, :]) / dz_0
+    dw_dz[0, :, :] = (w[1, :, :] - w[0, :, :]) / dz_0
+
+    #dz_1           = (dz[-1] + dz[-2])/2.
+    dz_1           = dz[-1]
+    du_dz[-1, :, :] = (u[-1, :, :] - u[-2, :, :]) / dz_1
+    dv_dz[-1, :, :] = (v[-1, :, :] - v[-2, :, :]) / dz_1
+    dw_dz[-1, :, :] = (w[-1, :, :] - w[-2, :, :]) / dz_1
+
+    return du_dx, dv_dx, dw_dx, du_dy, dv_dy, dw_dy, du_dz, dv_dz, dw_dz
+
+
+def compute_uBF(U,kk=None,dx=1,dy=1,filter=0):
+    # Return low-pass filtered U for different k
+    # Two methods
+    # filter = 0 => All
+    
+    
+    # Create the frequency grid (2D)
+    ny, nx = U.shape
+    kx = np.fft.fftfreq(nx,d=1./nx)
+    ky = np.fft.fftfreq(ny,d=1./ny)
+    # Change to wavenumber
+    kx = (2.0*np.pi)*kx/(nx*dx)
+    ky = (2.0*np.pi)*ky/(ny*dy)
+    
+    kx, ky = np.meshgrid(kx, ky, indexing='ij')
+    
+    # Mean frequency (not useful here -> no radius averaging)
+    k  = np.sqrt(kx**2. + ky**2.)
+    
+    #print('k ',kx.min(),kx.max())
+    #print('k ',k.min(),k.max())
+    #print('kk ',kk.min(),kk.max())
+    #plt.contourf(k);plt.colorbar();plt.show()
+    #stop
+    
+    # Compute low-pass filtered (2D)
+    print('** start U_hat **')
+    U_hat = np.fft.fft2(U)
+    
+    # Apply the filter in the frequency domain
+    #U_hatf = U_hat * filter_hat
+    
+    pltcont = False
+    levels = np.linspace(U.min(),U.max(),10)
+    
+    # Create a 1D K for Pi transport
+    if kk is None:
+        kk = np.linspace(k.min(),k.max(),30)
+    
+    for idx,k_idx in enumerate(kk):
+        
+        # Filter 1
+        U_hatf = U_hat.copy()
+        #plt.imshow(np.abs(U_hatf)**2., norm=LogNorm(), aspect='auto')
+        #plt.colorbar()
+        #plt.show()
+        U_hatf[k>k_idx] = 0.        
+        #plt.imshow(np.abs(U_hatf)**2., norm=LogNorm(), aspect='auto')
+        #plt.colorbar()
+        #plt.show()
+        
+        Uf = np.fft.ifftn(U_hatf)
+        if idx==0: # Save
+            Uf_k  = np.array(len(kk)*[np.zeros(Uf.shape)])        
+        Uf_k[idx,:,:]=Uf
+        
+        # Test Wind Averaged (FB!!)
+        #Uf  -= np.mean(Uf)
+        #Uf2 -= np.mean(Uf2)
+        
+        Uf2_k = None    
+        if filter>0:
+            # Filter 2 : Create the Gaussian low-pass filter
+            filter_hat = np.exp(-(k**2) / (2 * k_idx**2))
+            #plt.plot(filter_hat)
+            U_hatf2 = U_hat * filter_hat
+            Uf2 = np.fft.ifftn(U_hatf2)
+            if idx==0: # Save
+                Uf2_k = np.array(len(kk)*[np.zeros(Uf2.shape)])
+            Uf2_k[idx,:,:]=Uf2
+        
+        if pltcont:
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+            cs1 = ax1.contourf(U,levels=levels)
+            plt.colorbar(cs1, ax=ax1)
+            cs2 = ax2.contourf(Uf,levels=levels)
+            #plt.tight_layout()
+            plt.colorbar(cs2, ax=ax2)
+            plt.show()
+               
+            if filter>0:
+                fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+                cs1 = ax1.contourf(U,levels=levels)
+                plt.colorbar(cs1, ax=ax1)
+                cs2 = ax2.contourf(Uf2,levels=levels)
+                #plt.tight_layout()
+                plt.colorbar(cs2, ax=ax2)
+                plt.show()
+    
+    del Uf,U_hat,U_hatf
+    #gc.collect()
+    return kk,Uf_k,Uf2_k

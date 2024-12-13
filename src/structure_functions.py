@@ -13,21 +13,33 @@ import tools_for_spectra as tls
 import random
 
 
-# Path of the file
-vtyp = 'V5-5-1'
-#vtyp = 'V5-7-0'
-if vtyp == 'V5-5-1':
+
+# Model type
+#vtyp = 'V5-5-1'
+vtyp = 'V5-7-0'
+
+# Path of the file 
+machine='jean-zay'
+if machine=='jean-zay':
+    path0='/lustre/fsstor/projects/rech/whl/rces071/MNH-'+vtyp+'/' #+'/FI1024/REF/'
+    pathfig0=path0
+elif machine=='dell':
     path0="/home/fbrient/GitHub/objects-LES/data/"
+    pathfig0="/home/fbrient/GitHub/spectrum_analysis/figures/"+vtyp+'/'
+
+
+if vtyp == 'V5-5-1':
+    #path0="/home/fbrient/GitHub/objects-LES/data/"
     case ='IHOPNW';prefix='IHOP0';time='006';vtype='V0001';nc4='nc';OUT='OUT.'
     #case ='IHOP';sens='trlRu0x0';prefix='004';vtype='V0301';nc4='nc4';OUT=''
     #case ='FIRE';sens='Ls2x0';prefix='024';vtype='V0301';nc4='nc4';OUT=''
-    #case ='BOMEX';sens='Ru0NW';prefix='012';vtype='V0301';nc4='nc4';OUT=''
+    case ='BOMEX';prefix='Ru0NW';time='012';vtype='V0301';nc4='nc4';OUT=''
     sens   = prefix
     path   = path0+case+'/'+prefix+'/'
     file   = 'sel_'+prefix+'.1.'+vtype+'.'+OUT+time+'.'+nc4
     var1D  = ['vertical_levels','S_N_direction','W_E_direction'] #Z,Y,X
 elif vtyp == 'V5-7-0':
-    path0="/home/fbrient/MNH/"+vtyp+"/"
+    #path0="/home/fbrient/MNH/"+vtyp+"/"
     case ='FIRE3D';sens='FI1024';prefix='FIR1k'
     vtype='V0005';time='002';nc4='nc';OUT='OUT.'    
     path    = path0+case+'/'+sens+'/'
@@ -41,7 +53,7 @@ file    = path+file
 DATA    = nc.Dataset(file,'r')
 
 # Define pathfig
-pathfig = tls.pathfig(vtyp,case,sens,func='Structures_function')
+pathfig = tls.mk_pathfig(pathfig0,vtyp,case,sens,func='Structures_function')
 # Name figure : S3u_FIRE3D_FIR1k_V0005_002_80
 namefig0=pathfig+'{XXX}_'+case+'_'+prefix+'_'+vtype+'_'+time+'_{ZZZ}'+'{NNN}'
     

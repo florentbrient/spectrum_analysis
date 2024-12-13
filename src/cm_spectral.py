@@ -373,6 +373,7 @@ def compute_spectra(
     L = dx * N
     k1d = 2 * np.pi / L * np.arange(1, N // 2 + 1)
 
+    del Ftmp, psd_2d, psd_2d_all, scalar_field
     return k1d, psd_1d_rad, psd_1d_azi
 
 

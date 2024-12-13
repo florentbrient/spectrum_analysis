@@ -11,7 +11,7 @@ from scipy import integrate
 from scipy import ndimage
 import netCDF4 as nc
 from netCDF4 import Dataset
-import gc
+#import gc
 import os
 import scipy.stats as st
 from copy import deepcopy
