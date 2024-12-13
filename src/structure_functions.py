@@ -40,9 +40,9 @@ if vtyp == 'V5-5-1':
     var1D  = ['vertical_levels','S_N_direction','W_E_direction'] #Z,Y,X
 elif vtyp == 'V5-7-0':
     #path0="/home/fbrient/MNH/"+vtyp+"/"
-    case ='FIRE3D';sens='FI1024';prefix='FIR1k'
+    case ='FIRE3D';sens='FI1024';prefix='FIR1k';subdir='REF'
     vtype='V0005';time='002';nc4='nc';OUT='OUT.'    
-    path    = path0+case+'/'+sens+'/'
+    path    = path0+case+'/'+sens+'/'+subdir+'/'
     # FIR1k.1.V0001.OUT.002.nc
     file    = prefix+'.1.'+vtype+'.'+OUT+time+'.'+nc4
     var1D  = ['level','nj','ni'] #Z,Y,X
