@@ -19,8 +19,8 @@ import scipy as sp
 from scipy.spatial import cKDTree
 
 # test speed up savefig
-from PIL import Image
-from moviepy.video.io.bindings import mplfig_to_npimage
+#from PIL import Image
+#from moviepy.video.io.bindings import mplfig_to_npimage
 
 
 
@@ -30,8 +30,8 @@ def mkdir(path):
    except:
      pass
 
-def savefig2(fig, path):
-    Image.fromarray(mplfig_to_npimage(fig)).save(path)
+#def savefig2(fig, path):
+#    Image.fromarray(mplfig_to_npimage(fig)).save(path)
 
 def repeat(zz,ss):
     #if len(ss)==1:
