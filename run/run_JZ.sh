@@ -19,7 +19,7 @@ Node=$SLURM_JOB_NUM_NODES Task=$SLURM_NTASKS
 ------------------------------------------------------------------
 EOF
 
-path="/linkhome/rech/genlmd01/rces071/run/Github/spectrum_analysis/src/"
+path="/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src/"
 file="structure_functions.py"
 export MONORUN="python"
 
