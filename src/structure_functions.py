@@ -98,11 +98,11 @@ for file in files:
     
     #name of the file
     namefile=file.split('/')[-1]
-    vtyp    =namefile.split('.')[2]
+    vtype   =namefile.split('.')[2]
     time    =namefile.split('.')[4]
     
     # Open the netcdf file
-    file    = path+file
+    #file    = path+file
     DATA    = nc.Dataset(file,'r')
     
     # Define pathfig
