@@ -137,8 +137,8 @@ for file in files:
     nx            = UT.shape[-1]
     nr            = 100 # How much distance to compute lagged distance, structure 
     r_values      = np.linspace(1, nr, nr)*dx  # Lag distances to evaluate S(r)
-    nc            = 100 # How many "samples" are averaged?
-    ilines        = random.sample(list(np.linspace(0,nx-1,nx).astype(int)),nc)
+    ns            = 100 # How many "samples" are averaged?
+    ilines        = random.sample(list(np.linspace(0,nx-1,nx).astype(int)),ns)
     
     fracziall     = np.arange(0,fracmax,0.1)
     #fracziall = np.arange(0.7,0.8,0.1)
@@ -157,8 +157,8 @@ for file in files:
     
         # Compute power spectrum
         if iz==0:
-            pow_u,pow_v,pow_w =[np.zeros((NF,nc,int(nx/2)+1)) for ij in range(3)]
-            Su_r,Sv_r,Sw_r    =[np.zeros((NF,nc,nr)) for ij in range(3)]
+            pow_u,pow_v,pow_w =[np.zeros((NF,ns,int(nx/2)+1)) for ij in range(3)]
+            Su_r,Sv_r,Sw_r    =[np.zeros((NF,ns,nr)) for ij in range(3)]
         for il,iline in enumerate(ilines):
             # different cases
             # U along x, V along y
