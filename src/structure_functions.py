@@ -31,14 +31,14 @@ pathinfo  = '../infos/'
 fileinfo  = pathinfo+'info_run.txt'
 info_dict = read_info(fileinfo)
 
-vtyp   =info_dict['vtyp']
-machine=info_dict['machine']
-path0  =info_dict['path']
-case   =info_dict['case']
-sens   =info_dict['sens']
-prefix =info_dict['prefix']
-OUT     =info_dict['OUT']
-nc4     =info_dict['nc4']
+vtyp     =info_dict['vtyp']
+machine  =info_dict['machine']
+path0    =info_dict['path']
+case     =info_dict['case']
+sens     =info_dict['sens']
+prefix   =info_dict['prefix']
+OUT      =info_dict['OUT']
+nc4      =info_dict['nc4']
 if 'subdir' in info_dict.keys():
     subdir=info_dict['subdir']
 else:
@@ -47,6 +47,7 @@ if 'pathfig' in info_dict.keys():
     pathfig0=info_dict['pathfig']
 else:
     pathfig0=path0
+pathfig0+=vtyp+'/'
 #vtype='V0005';time='002';nc4='nc';OUT='OUT.'
 
 oldtype=False
@@ -95,9 +96,9 @@ else:
     var1D = ['level','nj','ni'] #Z,Y,X
 
 for file in files:
-    
     #name of the file
     namefile=file.split('/')[-1]
+    print(namefile)
     vtype   =namefile.split('.')[2]
     time    =namefile.split('.')[4]
     

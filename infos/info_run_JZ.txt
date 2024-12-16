@@ -1,5 +1,5 @@
 machine: jean-zay
-path: /lustre/fsn1/projects/rech/whl/rces071/
+path: /lustre/fsn1/projects/rech/whl/rces071/mon_calcul/
 vtyp: V5-7-0
 case: FIRE3D
 sens: FI1024

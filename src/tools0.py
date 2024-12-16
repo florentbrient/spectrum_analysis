@@ -19,9 +19,15 @@ import scipy as sp
 from scipy.spatial import cKDTree
 
 # test speed up savefig
-#from PIL import Image
+from PIL import Image
 #from moviepy.video.io.bindings import mplfig_to_npimage
 
+def fig_to_np_array(fig):
+    """Convert a Matplotlib figure to a NumPy array."""
+    fig.canvas.draw()  # Draw the canvas to update it
+    w, h = fig.canvas.get_width_height()
+    buf = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    return buf.reshape(h, w, 3)
 
 
 def mkdir(path):
@@ -32,6 +38,12 @@ def mkdir(path):
 
 #def savefig2(fig, path):
 #    Image.fromarray(mplfig_to_npimage(fig)).save(path)
+
+def savefig2(fig, path):
+    #Image.fromarray(mplfig_to_npimage(fig)).save(path)
+    np_image = fig_to_np_array(fig)
+    Image.fromarray(np_image).save(path)
+
 
 def repeat(zz,ss):
     #if len(ss)==1:
