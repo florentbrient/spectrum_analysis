@@ -1,0 +1,9 @@
+machine: dell
+path: /home/fbrient/MNH/ 
+vtyp: V5-7-0
+case: FIRE3D
+sens: FI1024
+prefix: FIR1k
+OUT: OUT
+nc4: nc
+pathfig: /home/fbrient/GitHub/spectrum_analysis/figures/ 

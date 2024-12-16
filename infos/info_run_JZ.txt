@@ -1,0 +1,9 @@
+machine: jean-zay
+path: /lustre/fsn1/projects/rech/whl/rces071/
+vtyp: V5-7-0
+case: FIRE3D
+sens: FI1024
+prefix: FIR1k
+subdir: REF
+OUT: OUT
+nc4: nc
