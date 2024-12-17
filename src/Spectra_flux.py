@@ -385,7 +385,7 @@ for file in files:
     ax1.set_xlabel('Wavenumber')
     ax1.set_ylabel('Pi_E')
     suffix = 'PiE'+Anom+'_all'
-    namefig =pathfig+'XXXX_'+case+'_'+prefix+'_'+vtype+'_'+time+'_'+suffix
+    namefig =pathfig+'XXXX_'+case+'_'+prefix+'_'+vtype+'_'+time+'_'+suffix+'.png'
     #namefig=pathfig+'XXXX_'+case+'_'+prefix
     #namefig=namefig.replace('XXXX','PiE'+Anom+'_all')+'.png'
     tl.savefig2(fig, namefig)
