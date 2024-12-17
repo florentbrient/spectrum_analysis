@@ -175,7 +175,9 @@ for file in files:
     DATA    = nc.Dataset(file,'r')
     
     # Define pathfig
-    pathfig = tls.mk_pathfig(vtyp,case,sens,func='Spectral_flux')
+    #pathfig = tls.mk_pathfig(vtyp,case,sens,func='Spectral_flux')
+    pathfig = tls.mk_pathfig(pathfig0,case=case,sens=sens,func='Spectral_flux')
+
     
     # Open dimensions
     nxnynz,data1D,dx,dy,dz= tls.dimensions(DATA,var1D)
