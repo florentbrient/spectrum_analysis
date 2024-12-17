@@ -177,6 +177,8 @@ for file in files:
     # Define pathfig
     #pathfig = tls.mk_pathfig(vtyp,case,sens,func='Spectral_flux')
     pathfig = tls.mk_pathfig(pathfig0,case=case,sens=sens,func='Spectral_flux')
+    namefig0 =pathfig+'XXXX_'+case+'_'+prefix+'_'+vtype+'_'+time+'_{ZZZ}'
+   #namefig  =pathfig+'XXXX_'+case+'_'+prefix+'_'+"{:.0f}".format(100*fraczi)
 
     
     # Open dimensions
@@ -345,7 +347,9 @@ for file in files:
             del tmp_PI
         
         
-        namefig=pathfig+'XXXX_'+case+'_'+prefix+'_'+"{:.0f}".format(100*fraczi)
+        #namefig=pathfig+'XXXX_'+case+'_'+prefix+'_'+"{:.0f}".format(100*fraczi)
+        zchar = "{:.0f}".format(100*fraczi)
+        namefig=namefig0.format(ZZZ=zchar)
         
         plot_flux(kv2,E_1d_rad,PI_E[iz,:],kPBL=kPBL,Euv=Euv_1d_rad,\
                       y1lab='E(k)',y2lab='PiE'+Anom,
@@ -380,8 +384,10 @@ for file in files:
     ax1.axhline(y=0,color='k')
     ax1.set_xlabel('Wavenumber')
     ax1.set_ylabel('Pi_E')
-    namefig=pathfig+'XXXX_'+case+'_'+prefix
-    namefig=namefig.replace('XXXX','PiE'+Anom+'_all')+'.png'
+    suffix = 'PiE'+Anom+'_all'
+    namefig =pathfig+'XXXX_'+case+'_'+prefix+'_'+vtype+'_'+time+'_'+suffix
+    #namefig=pathfig+'XXXX_'+case+'_'+prefix
+    #namefig=namefig.replace('XXXX','PiE'+Anom+'_all')+'.png'
     tl.savefig2(fig, namefig)
     plt.close()  
         
