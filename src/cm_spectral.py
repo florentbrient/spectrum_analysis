@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import fftpack, linalg, ndimage
 from scipy.optimize import curve_fit
-from scipy.integrate import simps
+#from scipy.integrate import simps
 
 #from ..utils import compute_r_squared
 
@@ -366,6 +366,7 @@ def compute_spectra(
         psd_2d_all.append(psd_2d)
         
         ## START Checking variance
+        ## Not sure that this checking works !
         # Radial wave number
         freq_x = np.fft.fftfreq(N, d=1)
         freq_y = np.fft.fftfreq(N, d=1)

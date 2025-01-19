@@ -152,7 +152,9 @@ if 'pathfig' in info_dict.keys():
 else:
     pathfig0=path0
     
-path   = path0+vtyp+'/'+case+'/'+sens+'/'+subdir+'/'
+path    = path0+vtyp+'/'+case+'/'+sens+'/'+subdir+'/'
+pathfig0= pathfig0+vtyp+'/'
+
 file0  = prefix+'.1.'+'*'+'.'+OUT+'*'+'.'+nc4
 files  = glob.glob(path+file0, recursive=True)
 print(files)
@@ -256,7 +258,7 @@ for file in files:
         fracmax = 2.5
     
     fracziall = np.arange(0,fracmax,0.1)
-    fracziall = np.arange(0.7,0.8,0.1)
+    #fracziall = np.arange(0.7,0.8,0.1)
     for iz,fraczi in enumerate(fracziall):
         print('***')
         print('Start loop for ',fraczi)
@@ -285,8 +287,7 @@ for file in files:
         variance2D = np.trapz(E_1d_rad, x=kv2)
         print('variance 2D ',variance2D)
         print('variance real ',np.var(TKE2D))
-
-        stop
+        #stop
 
         
         if enstrophy:
@@ -395,7 +396,7 @@ for file in files:
     suffix = 'PiE'+Anom+'_all'
     namefig =pathfig+'XXXX_'+case+'_'+prefix+'_'+vtype+'_'+time+'.png'
     #namefig=pathfig+'XXXX_'+case+'_'+prefix
-    namefig=namefig.replace('XXXX',suffix)+'.png'
+    namefig=namefig.replace('XXXX',suffix)
     tl.savefig2(fig, namefig)
     plt.close()  
         
