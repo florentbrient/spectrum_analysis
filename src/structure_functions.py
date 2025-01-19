@@ -57,6 +57,7 @@ if oldtype:
     vtyp = 'V5-7-0'
     # Path of the file 
     machine='jean-zay'
+    #machine='dell'
     if machine=='jean-zay':
         path0='/lustre/fsstor/projects/rech/whl/rces071/MNH-'+vtyp+'/' #+'/FI1024/REF/'
         pathfig0=path0
@@ -132,6 +133,15 @@ for file in files:
     VT = np.squeeze(DATA['VT'])
     WT = np.squeeze(DATA['WT'])
     
+    # Substract horizontal mean
+    Anom = ''
+    anomHor = True
+    if anomHor:
+        UT = tl.anomcalc(UT)
+        VT = tl.anomcalc(VT)
+        WT = tl.anomcalc(WT)
+        Anom = '_Anom'
+    
     # Information for computing structure functions
     sampling_rate = 1/dx
     nx            = UT.shape[-1]
@@ -154,6 +164,7 @@ for file in files:
         ############################
         # compute structure function
         ############################
+    
     
         # Compute power spectrum
         if iz==0:

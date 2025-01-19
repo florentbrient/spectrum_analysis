@@ -37,7 +37,7 @@ F = np.fft.fft2(f)
 F_shifted = np.fft.fftshift(F)
 
 # Compute the magnitude spectrum for visualization
-magnitude_spectrum = np.abs(F_shifted)
+magnitude_spectrum = np.abs(F_shifted)**2.
 
 # Compute the inverse FFT to verify the result
 f_reconstructed = np.fft.ifft2(F).real
@@ -62,6 +62,10 @@ print("Area under psd1d =", area)
 # integral under the Power Spectra
 variance_psd = np.sum(psd_1d_rad) * 2 * np.pi / (dx * N)
 print("variance_psd: ",variance_psd)
+variance_azi = np.sum(psd_1d_azi)
+print("variance_azi: ",variance_azi)
+
+
 
 anisotropy = cm.scalar.spectral_anisotropy(psd_1d_azi)
 #print("area TEST 2 =", np.trapz(psd_1d_azi, x=np.arange(0, 360, int(5) )))
@@ -126,5 +130,28 @@ plt.show()
 print("Original signal variance:", np.var(f))
 print("Reconstructed signal variance:", np.var(f_reconstructed))
 print("Difference:", np.max(np.abs(f - f_reconstructed)))
+# Impossible because of the absolute value
+#print("Reconstructed signal variance from psd2D:", np.var(np.fft.ifft2(psd_2d).real))
 
+
+
+# Define wave numbers
+#nx, ny = field.shape
+#kx = np.fft.fftfreq(nx, d=1.0) #freq_x
+#ky = np.fft.fftfreq(ny, d=1.0)
+kx, ky = np.meshgrid(freq_x, freq_y)
+kr = np.sqrt(kx**2 + ky**2).flatten()  # Radial wave numbers
+power_spectrum_flat = magnitude_spectrum.flatten()
+
+# Bin the 2D power spectrum into radial bins
+bins = np.arange(0.01, np.max(kr), step=0.01)
+radial_power, _ = np.histogram(kr, bins=bins, weights=power_spectrum_flat)
+counts, _ = np.histogram(kr, bins=bins)
+
+# Average power in each radial bin
+radial_power /= counts  # This gives P(k)
+
+# To recover variance:
+total_variance = np.sum(radial_power * counts)/(N*M)**2.
+print(f"Total variance recovered: {total_variance}")
 

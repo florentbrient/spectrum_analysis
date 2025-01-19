@@ -202,7 +202,7 @@ for file in files:
     
     # Substract horizontal mean
     Anom = ''
-    anomHor = False
+    anomHor = True
     if anomHor:
         UT = tl.anomcalc(UT)
         VT = tl.anomcalc(VT)
@@ -256,7 +256,7 @@ for file in files:
         fracmax = 2.5
     
     fracziall = np.arange(0,fracmax,0.1)
-    #fracziall = np.arange(0.7,0.8,0.1)
+    fracziall = np.arange(0.7,0.8,0.1)
     for iz,fraczi in enumerate(fracziall):
         print('***')
         print('Start loop for ',fraczi)
@@ -264,14 +264,19 @@ for file in files:
         
         # Compute TKE
         [UT2D,VT2D,WT2D] = [ij[idx,:,:] for ij in [UT,VT,WT]]
+        TKE2D  = pow(tl.anomcalc(UT2D),2.)\
+                +pow(tl.anomcalc(VT2D),2.)\
+                +pow(tl.anomcalc(WT2D),2.)
         kv2, E_1d_rad, E_1d_azi = spec.compute_spectra(
-            [UT2D,VT2D,WT2D],dx=dx,periodic_domain=True,apply_detrending=False,
-            window=None,fact=0.5)
+            [TKE2D],dx=dx,periodic_domain=True,apply_detrending=False,
+            window=None,fact=1)
             
         # Compute horizontal TKE
+        TKEUV2D  = pow(tl.anomcalc(UT2D),2.)\
+                  +pow(tl.anomcalc(VT2D),2.)
         kv2b, Euv_1d_rad, Euv_1d_azi = spec.compute_spectra(
-            [UT2D,VT2D],dx=dx,periodic_domain=True,apply_detrending=False,
-            window=None,fact=0.5)
+            [TKEUV2D],dx=dx,periodic_domain=True,apply_detrending=False,
+            window=None,fact=1)
         
         # It doesn't work
         #test_injection_rate2D(UT2D,VT2D,dx=dx,dy=dy,k=kv2)
@@ -279,13 +284,16 @@ for file in files:
         
         variance2D = np.trapz(E_1d_rad, x=kv2)
         print('variance 2D ',variance2D)
-        print('variance real ',np.var(0.5*(UT2D**2.+VT2D**2.+WT2D**2.)) )
+        print('variance real ',np.var(TKE2D))
+
+        stop
+
         
         if enstrophy:
             [VORTX2D,VORTY2D,VORTZ2D] = [ij[idx,:,:] for ij in [VORTX,VORTY,VORTZ]]
             kv3, Ez_1d_rad, Ez_1d_azi = spec.compute_spectra(
                 [VORTX2D,VORTY2D,VORTZ2D],dx=dx,periodic_domain=True,apply_detrending=False,
-                window=None,fact=0.5)
+                window=None,fact=1)
         
         # Energy
         # Calculate the low-pass filtered velocity field
@@ -385,9 +393,9 @@ for file in files:
     ax1.set_xlabel('Wavenumber')
     ax1.set_ylabel('Pi_E')
     suffix = 'PiE'+Anom+'_all'
-    namefig =pathfig+'XXXX_'+case+'_'+prefix+'_'+vtype+'_'+time+'_'+suffix+'.png'
+    namefig =pathfig+'XXXX_'+case+'_'+prefix+'_'+vtype+'_'+time+'.png'
     #namefig=pathfig+'XXXX_'+case+'_'+prefix
-    #namefig=namefig.replace('XXXX','PiE'+Anom+'_all')+'.png'
+    namefig=namefig.replace('XXXX',suffix)+'.png'
     tl.savefig2(fig, namefig)
     plt.close()  
         

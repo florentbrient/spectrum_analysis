@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import fftpack, linalg, ndimage
 from scipy.optimize import curve_fit
+from scipy.integrate import simps
 
 #from ..utils import compute_r_squared
 
@@ -320,7 +321,7 @@ def compute_spectra(
     """
 
     # TODO: This explicitly assumes square domains
-    print(scalar_field[0].shape)
+    #print(scalar_field[0].shape)
     if scalar_field[0].shape[0] != scalar_field[0].shape[1]:
         raise NotImplementedError(
             f"nx != ny ({scalar_field[0].shape[1]} != {scalar_field[0].shape[0]})"
@@ -363,9 +364,35 @@ def compute_spectra(
         Ftmp = fftpack.fftshift(Ftmp)  # Shift so k0 is centred
         psd_2d = np.abs(Ftmp) ** 2 / np.prod(scalar_field[ij].shape)  # Energy-preserving 2D PSD
         psd_2d_all.append(psd_2d)
+        
+        ## START Checking variance
+        # Radial wave number
+        freq_x = np.fft.fftfreq(N, d=1)
+        freq_y = np.fft.fftfreq(N, d=1)
+        kx, ky = np.meshgrid(freq_x, freq_y)
+        kr = np.sqrt(kx**2 + ky**2).flatten()  # Radial wave numbers
+        #power_spectrum_flat = (np.abs(Ftmp)** 2).flatten()
+        power_spectrum_flat = psd_2d.flatten()
+        
+        # Bin the 2D power spectrum into radial bins
+        bins = np.arange(0.01, np.max(kr), step=0.001)
+        radial_power, _ = np.histogram(kr, bins=bins, weights=power_spectrum_flat)
+        counts, _ = np.histogram(kr, bins=bins)
+
+        # Average power in each radial bin
+        radial_power /= counts  # This gives P(k)
+
+        # To recover variance:
+        total_variance = np.sum(radial_power * counts)/(N*N)**2.
+        print('variance A of ',ij,np.var(scalar_field[ij]))
+        print(f"Total variance recovered: {total_variance}")
+        ## END Checking variance
+        
+
     # Update
-    if NS>1:
-        psd_2d_all = fact*np.sum(psd_2d_all,axis=0)
+    #print('psd_2d_all ',NS,len(psd_2d))
+    #if NS>1:
+    psd_2d_all = fact*np.sum(psd_2d_all,axis=0)
     psd_1d_rad = _get_psd_1d_radial(psd_2d_all, dx)  # Azimuthal integral-> 1D radial PSD
     psd_1d_azi = _get_psd_1d_azimuthal(psd_2d_all)  # Radial integral -> Sector 1D PSD
 
