@@ -12,7 +12,8 @@ from collections import OrderedDict
 import numpy as np
 from scipy import integrate
 import Constants as CC
-
+from netCDF4 import Dataset
+import os
 
 
 # Read txt file for informations
@@ -107,6 +108,60 @@ def repeat(zz,ss):
         zz  = np.repeat(zz[ :,:, np.newaxis],ss[1],axis=2)
     return zz
 
+# Save NetCDF file (for spectra)
+def writenetcdf(file_netcdf,data_dims,data):
+    
+    # Open or create file
+    try: ncfile.close()  # just to be safe, make sure dataset is not already open.
+    except: pass
+
+    # Check if file exists and remove it
+    if os.path.exists(file_netcdf):
+        os.remove(file_netcdf)
+
+
+    ncfile = Dataset(file_netcdf,mode='w',format='NETCDF4_CLASSIC') 
+    print('Your NetCDF file is ',ncfile)
+
+    # Creating dimensions
+    kv_dim  = ncfile.createDimension('kv',len(data_dims[0]))   # wavenumber kv
+    kvazi_dim  = ncfile.createDimension('kvazi', len(data_dims[1])) # 72 (azimutahl spectra)
+    level_dim = ncfile.createDimension('level',len(data_dims[2])) # level axis
+    for dim in ncfile.dimensions.items():
+        print(dim)
+    
+    ncfile.title='File: '+file_netcdf
+    print(ncfile.title)
+    
+    # Creating variables
+    kv = ncfile.createVariable('kv', np.float64, ('kv',))
+    kv.units = 'rad/km'
+    kv.long_name = 'Wavenumber dims'
+    kvazi = ncfile.createVariable('kvazi', np.float64, ('kvazi',))
+    kvazi.units = 'Angle'
+    kvazi.long_name = 'kv azimuthal'
+    level = ncfile.createVariable('level', np.float64, ('level',))
+    level.units = 'kilometers'
+    level.long_name = 'Altitude'  
+    
+    # Writing data
+    kv[:]    = data_dims[0]
+    kvazi[:]  = data_dims[1]
+    level[:] = data_dims[2]
+    for key in data.keys():
+        if key=='E1da': units=('kvazi','level')
+        elif  key=='var': units=('level')
+        else: units=('kv','level')
+        
+        print('units ',units)
+        tmp = ncfile.createVariable(key,np.float64,units) # note: unlimited dimension is leftmost
+        tmp.units = '' # degrees Kelvin
+        tmp.standard_name = key # this is a CF standard name
+        tmp[:]   = data[key]
+    ncfile.close()
+
+################ Spectra calculation #####################
+
 
 # Calculate gradients in the 3 dimensions
 def compute_gradients(u, v, w, dx, dy, dz):
@@ -145,9 +200,6 @@ def compute_gradients(u, v, w, dx, dy, dz):
 
     return du_dx, dv_dx, dw_dx, du_dy, dv_dy, dw_dy, du_dz, dv_dz, dw_dz
 
-
-
-################ Spectra calculation #####################
 
 def checkvariance(k,E,field):
     varspec = np.trapz(E,x=k)

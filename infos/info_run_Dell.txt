@@ -6,4 +6,5 @@ sens: FI1024
 prefix: FIR1k
 OUT: OUT
 nc4: nc
+pathsave: /home/fbrient/GitHub/spectrum_analysis/data/spectra/
 pathfig: /home/fbrient/GitHub/spectrum_analysis/figures/ 

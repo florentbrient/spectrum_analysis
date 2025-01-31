@@ -7,7 +7,7 @@ Spectral analysis of 3D output of Meso-NH simulations
 Spectrum calculated by Janssens et al (20)
 Link: 
     
-Outputs
+Outputs (save in NetCDF)
 - 1D spectra
 - 
 
@@ -21,6 +21,8 @@ import glob
 import tools as tl
 import cloudmetrics as cm
 import time
+import xarray as xr
+
 
 
 
@@ -46,6 +48,11 @@ if 'pathfig' in info_dict.keys():
     pathfig0=info_dict['pathfig']
 pathfig0= pathfig0+ivar['vtyp']+'/'
 
+if 'pathsave' in info_dict.keys():
+    pathsave=info_dict['pathsave']
+
+
+
 # Import the list of files
 importfiles=False
 if importfiles:
@@ -64,7 +71,6 @@ for file in files:
     print('*****')
     print('Start analysis of ',file)
     print('*****')
-    
     
     # Open the netcdf file
     DATA    = nc.Dataset(file,'r')
@@ -124,15 +130,17 @@ for file in files:
     
     
     # Initialisation of output
-    
-    nkv = int(len(x)/2)
-    E1dr = np.zeros(( nkv, len(z) ))
-    E1da = np.zeros(( 72, len(z) )) # 360° divided by 5° angles
-    PI_E = np.zeros(( nkv, len(z) ))
-    PI_Z = np.zeros(( nkv, len(z) ))
+    nx,nz = len(x),len(z)
+    nkv = int(nx/2)
+    E1dr = np.zeros(( nkv, nz ))
+    E1da = np.zeros(( 72,  nz )) # 360° divided by 5° angles
+    PI_E = np.zeros(( nkv, nz ))
+    PI_Z = np.zeros(( nkv, nz ))
+    var  = np.zeros(nz)
     
     # Compute spectra at each altitude
-    for idx,zi in enumerate(z):
+    zloop=[z[10]] # zloop=z by defaut
+    for idx,zi in enumerate(zloop):
         # Compute 2D TKE
         [UT2D,VT2D,WT2D] = [ij[idx,:,:] for ij in [UT,VT,WT]]
         TKE2D  = pow(tl.anomcalc(UT2D),2.)\
@@ -142,7 +150,8 @@ for file in files:
         kv, E1dr[:,idx], E1da[:,idx] = cm.scalar.compute_spectra(
             TKE2D,dx=dx,periodic_domain=True,apply_detrending=False,
             window=None)
-        
+
+        var[idx]=np.var(TKE2D)        
         # Verify if the variance between the spectra and the field is not too different
         #tl.checkvariance(kv,E_1d_rad,TKE2D)
         
@@ -157,7 +166,7 @@ for file in files:
         kk,Vf_k = tl.compute_uBF(VT2D,kk=kv,dx=dx,dy=dy)
         kk,Wf_k = tl.compute_uBF(WT2D,kk=kv,dx=dx,dy=dy)
         time2 = time.time()
-        print('%s function took %0.3f ms' % ("Spectra Energy", (time2-time1)*1000.0))
+        print('%s function took %0.3f s' % ("Spectra Energy", (time2-time1)))
         
         # Calculate the non-linear energy flux
         print('Start compute non-linear energy flux')
@@ -186,9 +195,51 @@ for file in files:
             del tmp_PI
         
         
-            
+    # Save output for each nc file
+    # Data to be saved¨
+    #  kv, E1dr, E1da, PI_E, PI_Z
+    
+    # Name of NetCDF file to save
+    # Take relevant information from the name file
+    tab = file.split('/')[-1].split('.')
+    prefix,vinfo, tinfo = tab[0],tab[2],tab[4]
+    file_netcdf='_'.join(['Spectra',prefix,vinfo,tinfo])
+    file_netcdf1=pathsave+file_netcdf+'.nc'
+    
+    kvazi=np.arange(0,360,5) # for azimuthal
+    
+    # data_dims={}
+    # # Dimensions
+    # data_dims[0]=kv
+    # data_dims[1]=np.arange(0,360,5) # for azimuthal
+    # data_dims[2]=z
+    # # Variables to save
+    # data={}
+    # data['E1dr']=E1dr
+    # data['E1da']=E1da
+    # data['PI_E']=PI_E
+    # data['PI_Z']=PI_Z
+    # data['PBL']=PBLheight
+    # data['var']=var
+    # tl.writenetcdf(file_netcdf1,data_dims,data)
         
         
+    ds = xr.Dataset(
+        {
+        "E1dr": (("kv", "z"), E1dr),
+        "E1da": (("kvazi", "z"), E1da),
+        "PI_E": (("kv", "z"), PI_E),
+        "PI_Z": (("kv", "z"), PI_Z),
+        "variance": (("z",),var),
+        },
+        coords={"kv":kv, "z": z, "kvazi":kvazi}
+    )
+    # Add a scalar variable (e.g., a global attribute)
+    ds["PBL"] = PBLheight  # A single value
+
+    # Save to NetCDF (overwrites if exists)
+    file_netcdf2=pathsave+file_netcdf+'.nc'
+    ds.to_netcdf(file_netcdf2)
     
     
     
