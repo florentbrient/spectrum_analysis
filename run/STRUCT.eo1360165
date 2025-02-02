@@ -1,0 +1,11 @@
+------------------------------------------------------------------
+Job submit on jean-zay1 by rces071
+JobID=1360165 Running_Node=r2i4n3
+Node=1 Task=1
+------------------------------------------------------------------
+/var/spool/slurmd/job1360165/slurm_script: line 27: 1144871 Killed                  ${MONORUN} ${path}'/'${file}
+
+real	0m10.720s
+user	0m4.422s
+sys	0m3.632s
+slurmstepd: error: Detected 1 oom_kill event in StepId=1360165.batch. Some of the step tasks have been OOM Killed.

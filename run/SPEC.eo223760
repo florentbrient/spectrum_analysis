@@ -1,0 +1,8 @@
+------------------------------------------------------------------
+Job submit on jean-zay1 by rces071
+JobID=223760 Running_Node=r1i0n10
+Node=1 Task=1
+------------------------------------------------------------------
+/lustre/fshomisc/home/rech/genlmd01/rces071/Github/spectrum_analysis/src/tools.py:261: ComplexWarning: Casting complex values to real discards the imaginary part
+  Uf_k[idx,:,:]=Uf
+slurmstepd: error: *** JOB 223760 ON r1i0n10 CANCELLED AT 2025-02-02T07:28:29 DUE TO TIME LIMIT ***

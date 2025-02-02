@@ -1,0 +1,10 @@
+------------------------------------------------------------------
+Job submit on jean-zay1 by rces071
+JobID=213512 Running_Node=r1i0n19
+Node=1 Task=1
+------------------------------------------------------------------
+python: can't open file '/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src//spectra_analysis.py': [Errno 2] No such file or directory
+
+real	0m0.025s
+user	0m0.013s
+sys	0m0.006s

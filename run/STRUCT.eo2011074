@@ -1,0 +1,682 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=2011074 Running_Node=r2i2n32
+Node=1 Task=1
+------------------------------------------------------------------
+['/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0001.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0003.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0005.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0012.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0007.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0009.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0003.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0010.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0002.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0008.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0002.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0005.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0001.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0004.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0004.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0011.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0006.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0008.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0012.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0011.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0009.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0007.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0006.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0010.OUT.002.nc']
+FIR1k.1.V0001.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0003.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0005.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0012.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0007.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0009.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0003.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0010.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0002.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0008.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0002.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0005.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0001.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0004.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0004.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0011.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0006.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0008.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0012.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0011.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0009.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0007.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0006.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+FIR1k.1.V0010.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.0 zi
+***
+Start loop for  0.1 zi
+***
+Start loop for  0.2 zi
+***
+Start loop for  0.30000000000000004 zi
+***
+Start loop for  0.4 zi
+***
+Start loop for  0.5 zi
+***
+Start loop for  0.6000000000000001 zi
+***
+Start loop for  0.7000000000000001 zi
+***
+Start loop for  0.8 zi
+***
+Start loop for  0.9 zi
+***
+Start loop for  1.0 zi
+***
+Start loop for  1.1 zi
+
+real	693m37.529s
+user	686m42.651s
+sys	2m48.632s

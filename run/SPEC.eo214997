@@ -1,0 +1,13 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=214997 Running_Node=r1i3n24
+Node=1 Task=1
+------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src//spectral_analysis.py", line 22, in <module>
+    import cloudmetrics as cm
+ModuleNotFoundError: No module named 'cloudmetrics'
+
+real	0m6.896s
+user	0m13.841s
+sys	0m0.520s

@@ -2,8 +2,8 @@
 #SBATCH -J SPEC
 #SBATCH -N 1          # nodes number
 #SBATCH -n 1          # CPUs number (on all nodes) 
+#SBATCH --exclusive
 #SBATCH -q qos_cpu-t3
-#SBATCH --exclusive           
 #SBATCH -o SPEC.eo%j   #
 #SBATCH -e SPEC.eo%j   #
 #SBATCH -t 19:59:00    # time limit
@@ -20,11 +20,9 @@ Node=$SLURM_JOB_NUM_NODES Task=$SLURM_NTASKS
 EOF
 
 path="/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src/"
-file="spectral_analysis.py"
+file="Spectra_flux.py"
 export MONORUN="python"
 
 module load miniforge/24.9.0
-ln -sf ../infos/info_run_JZ.txt ../infos/info_run.txt
-
 
 time ${MONORUN} ${path}'/'${file}

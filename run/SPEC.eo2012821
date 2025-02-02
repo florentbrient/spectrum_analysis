@@ -1,0 +1,38 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=2012821 Running_Node=r2i5n6
+Node=1 Task=1
+------------------------------------------------------------------
+/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src//Spectra_flux.py:285: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+  variance2D = np.trapz(E_1d_rad, x=kv2)
+['/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0001.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0003.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0005.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0012.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0007.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0009.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0003.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0010.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0002.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0008.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0002.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0005.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0001.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0004.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0004.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0011.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0006.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0008.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0012.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0011.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0009.OUT.001.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0007.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0006.OUT.002.nc', '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0010.OUT.002.nc']
+FIR1k.1.V0001.OUT.002.nc
+Error in opening  THLM
+Error in opening  THLM
+len  3
+***
+Start loop for  0.7
+variance A of  0 0.29572752
+Total variance recovered: 2.809292230183869e-07
+h 1026 wc 513
+(72,) [  0   5  10  15  20  25  30  35  40  45  50  55  60  65  70  75  80  85
+  90  95 100 105 110 115 120 125 130 135 140 145 150 155 160 165 170 175
+ 180 185 190 195 200 205 210 215 220 225 230 235 240 245 250 255 260 265
+ 270 275 280 285 290 295 300 305 310 315 320 325 330 335 340 345 350 355]
+variance A of  0 0.13079955
+Total variance recovered: 1.2425424319535156e-07
+h 1026 wc 513
+(72,) [  0   5  10  15  20  25  30  35  40  45  50  55  60  65  70  75  80  85
+  90  95 100 105 110 115 120 125 130 135 140 145 150 155 160 165 170 175
+ 180 185 190 195 200 205 210 215 220 225 230 235 240 245 250 255 260 265
+ 270 275 280 285 290 295 300 305 310 315 320 325 330 335 340 345 350 355]
+variance 2D  0.29547573265551536
+variance real  0.29572752
+Traceback (most recent call last):
+  File "/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src//Spectra_flux.py", line 289, in <module>
+    stop
+NameError: name 'stop' is not defined
+
+real	0m25.121s
+user	0m24.255s
+sys	0m8.634s

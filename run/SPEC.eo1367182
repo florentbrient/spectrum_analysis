@@ -1,0 +1,10 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=1367182 Running_Node=r1i3n22
+Node=1 Task=1
+------------------------------------------------------------------
+/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src//Spectra_flux.py:276: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+  variance2D = np.trapz(E_1d_rad, x=kv2)
+/lustre/fshomisc/home/rech/genlmd01/rces071/Github/spectrum_analysis/src/tools_for_spectra.py:215: ComplexWarning: Casting complex values to real discards the imaginary part
+  Uf_k[idx,:,:]=Uf
+slurmstepd: error: *** JOB 1367182 ON r1i3n22 CANCELLED AT 2024-12-17T13:58:52 ***

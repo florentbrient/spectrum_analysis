@@ -1,0 +1,10 @@
+------------------------------------------------------------------
+Job submit on jean-zay1 by rces071
+JobID=213379 Running_Node=r1i4n27
+Node=1 Task=1
+------------------------------------------------------------------
+python: can't open file '/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src//Spectra_flux.py': [Errno 2] No such file or directory
+
+real	0m0.026s
+user	0m0.010s
+sys	0m0.009s

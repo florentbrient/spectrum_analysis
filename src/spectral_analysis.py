@@ -38,7 +38,7 @@ for tmp in info_list:
     
 
 # Path of your simulations
-path    = '/'.join([ivar[ij] for ij in ['path','vtyp','case','sens']])
+path    = '/'.join([ivar[ij] for ij in ['path','vtyp','case','sens']])+'/'
 if 'subdir' in info_dict.keys():
     path+=info_dict['subdir']+'/'
 
@@ -54,7 +54,7 @@ if 'pathsave' in info_dict.keys():
 
 
 # Import the list of files
-importfiles=False
+importfiles=True
 if importfiles:
     file0  = ivar['prefix']+'.1.'+'*'+'.'+ivar['OUT']+'*'+'.'+ivar['nc4']
     files  = glob.glob(path+'/'+file0, recursive=True)
@@ -62,7 +62,7 @@ else:
     # add your files here
     testfile = "/home/fbrient/MNH//V5-7-0/FIRE3D/FI1024/FIR1k.1.V0010.OUT.002.nc"
     files    = [testfile]
-print(files)
+print(path+'/'+file0,files)
 
 # Names of vertical axis
 var1D = ['level','nj','ni'] #Z,Y,X
@@ -139,7 +139,8 @@ for file in files:
     var  = np.zeros(nz)
     
     # Compute spectra at each altitude
-    zloop=[z[10]] # zloop=z by defaut
+    #zloop=[z[10]] # zloop=z by defaut
+    zloop=z
     for idx,zi in enumerate(zloop):
         # Compute 2D TKE
         [UT2D,VT2D,WT2D] = [ij[idx,:,:] for ij in [UT,VT,WT]]
