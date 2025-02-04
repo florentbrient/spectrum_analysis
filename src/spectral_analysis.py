@@ -96,11 +96,11 @@ VT = np.squeeze(DATA['VT'])
 WT = np.squeeze(DATA['WT'])
 
 # Substract horizontal mean
-#anomHor = True
-#if anomHor:
-#    UT = tl.anomcalc(UT)
-#    VT = tl.anomcalc(VT)
-#    WT = tl.anomcalc(WT)
+anomHor = True
+if anomHor:
+    UT = tl.anomcalc(UT)
+    VT = tl.anomcalc(VT)
+    WT = tl.anomcalc(WT)
     
 # Gradients
 gradients = tl.compute_gradients(UT, VT, WT, dx, dy, dz)

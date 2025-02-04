@@ -16,6 +16,7 @@ import numpy as np
 import xarray as xr
 from glob import glob
 import pylab as plt
+import tools as tl
 
 def read_netcdfs(files, dim):
     # glob expands paths with * to a list of files, like the unix shell
@@ -35,16 +36,36 @@ data     = read_netcdfs(filein0, dim='time')
 kv       = data.kv
 z        = data.z
 time     = data.time
+
+# Compute altitude differences
+dz = np.diff(z)  # Differences between consecutive altitudes
+dz = np.insert(dz, 0, dz[0])  # Assume first weight equals first diff
+
+# Initializing
+nt,nkv,nz=np.shape(data.PI_E)
+PI_E_sum = np.zeros((nt,nkv))
+Erad_sum = np.zeros((nt,nkv))
+#PI_E_sum2 = np.zeros((nt,nkv))
+
+
 for idxt,tt in enumerate(time):
     PBL  = data.PBL[idxt]
+    idxpbl = tl.near(z,PBL).data
+    
+    idxall=np.arange(0,idxpbl+30)
+    weights= dz[idxall] #+1 for all (small) overshoot
+    
+    PI_E_sum[idxt,:]=np.average(data.PI_E[idxt,:,idxall], axis=-1, weights=weights)
+    Erad_sum[idxt,:]=np.average(data.E1dr[idxt,:,idxall], axis=-1, weights=weights)
+    
+    # test
+    #fracziall = np.arange(0,1.2,0.1)
+    #idxall2   = [int(ij*idxpbl) for ij in fracziall]
+    #weights   = dz[idxall2]
+    #PI_E_sum2[idxt,:]=np.average(data.PI_E[idxt,:,idxall2], axis=-1, weights=weights)
     
     
-    weights= [dz[int(fraczi*idxzi)] for fraczi in fracziall]
-    PI_E_sum=np.average(PI_E, axis=0, weights=weights)
-    Erad_sum=np.average(E1drad_all, axis=0, weights=weights)
-    Euvrad_sum=np.average(Euv1drad_all, axis=0, weights=weights)
-    print(PI_E_sum.shape)
     
-    plot_flux(kv2,Erad_sum,PI_E_sum,kPBL=kPBL,Euv=Euvrad_sum,\
-              y1lab='E(k)',y2lab='PiE'+Anom+'_Sum',
-              plotlines=True,namefig=namefig)
+#    plot_flux(kv2,Erad_sum,PI_E_sum,kPBL=kPBL,Euv=Euvrad_sum,\
+#              y1lab='E(k)',y2lab='PiE'+Anom+'_Sum',
+#              plotlines=True,namefig=namefig)

@@ -87,6 +87,11 @@ def tryopen(vv,DATA):
         tmp = None
     return tmp
 
+# Fin nearest point
+def near(array,value):
+    idx=(abs(array-value)).argmin()
+    return idx
+
 # Calculate the anamoly relative to the horizontal mean
 def anomcalc(tmp):
     # ip = 0 (3D)
