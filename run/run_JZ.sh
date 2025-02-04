@@ -2,11 +2,11 @@
 #SBATCH -J SPEC
 #SBATCH -N 1          # nodes number
 #SBATCH -n 1          # CPUs number (on all nodes) 
-#SBATCH -q qos_cpu-t3
-#SBATCH --exclusive           
+##SBATCH -q prepost
+#SBATCH --partition=prepost
 #SBATCH -o SPEC.eo%j   #
 #SBATCH -e SPEC.eo%j   #
-#SBATCH -t 19:59:00    # time limit
+#SBATCH -t 04:59:00    # time limit
 #SBATCH --export=NONE
 #SBATCH -A whl@cpu # put here you account/projet name
 
@@ -21,7 +21,7 @@ EOF
 
 # Name of the file
 file=$1
-print($file)
+echo $file
 
 path="/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src/"
 filepy="spectral_analysis.py"

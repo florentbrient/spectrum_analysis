@@ -1,0 +1,9 @@
+ ! NOAA/PMEL TMAP
+ ! FERRET v7.6 (optimized)
+ ! Linux 4.18.0-305.49.1.el8_4.x86_64 64-bi - 06/24/22
+ !  2-Feb-25 17:03     
+
+use /lustre/fsn1/projects/rech/whl/rces071/mon_calcul/V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0010.OUT.001.nc
+sh da
+shade/k=45 UT
+quit()

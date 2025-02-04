@@ -1,1 +1,1 @@
-../infos/info_run_Dell.txt
+../infos/info_run_JZ.txt

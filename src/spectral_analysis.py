@@ -67,6 +67,8 @@ if 'pathsave' in info_dict.keys():
 #     files  = [path+'/'+file0]
 #print(path+'/'+file0,files)
 
+file=path+file
+
 # Names of vertical axis
 var1D = ['level','nj','ni'] #Z,Y,X
 

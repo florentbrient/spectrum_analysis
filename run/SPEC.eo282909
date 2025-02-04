@@ -1,0 +1,15 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=282909 Running_Node=jean-zay-pp2
+Node=1 Task=1
+------------------------------------------------------------------
+
+Traceback (most recent call last):
+  File "/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src//spectral_analysis.py", line 32, in <module>
+    file = sys.argv[1] # name of the file
+           ~~~~~~~~^^^
+IndexError: list index out of range
+
+real	1m25.445s
+user	0m1.431s
+sys	0m1.497s
