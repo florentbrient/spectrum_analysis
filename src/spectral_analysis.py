@@ -13,8 +13,7 @@ Outputs (save in NetCDF)
 - Spectra flux (energy and enstrophy)
 - variance
 - PBL height
-
-
+- Variance and spectra for LWP
 First start: 30 Jan 2025
 @author: fbrient
 """
@@ -29,7 +28,8 @@ import xarray as xr
 import sys
 
 
-file = sys.argv[1] # name of the file
+file = 'FIR1k.1.V0006.OUT.002.nc'
+#file = sys.argv[1] # name of the file
 
 # Open information from 'info_run_JZ.txt'
 pathinfo  = '../infos/'
@@ -92,6 +92,45 @@ idxzi     = tl.findpbltop(inv,DATA,var1D,offset=threshold)
 PBLheight = z[idxzi] # km
 kPBL      = tl.z2k(PBLheight) #rad/km
 
+# By default, save information about the LWP (from cloudmetrics)
+RCT = None
+if 'RCT' in DATA.variables.keys():
+    RCT = np.squeeze(DATA['RCT'])
+    LWP = tl.createnew('LWP',DATA,var1D)
+    LWP = np.squeeze(LWP)
+    
+    kv, ELWPr, ELWPa = cm.scalar.compute_spectra(
+        LWP,dx=dx,periodic_domain=True,apply_detrending=False,
+        window=None)
+    
+    indLWP = {}
+    # 1D Var
+    subroutines=['kurtosis','mean','skew','std','var','woi1','woi2','woi3']
+    for subr in subroutines:
+        func = getattr(cm.scalar, subr)
+        indLWP[subr] = func(LWP) 
+    # 1D Var with flatten field
+    subroutines=['kurtosis','skew']
+    for subr in subroutines:
+        func = getattr(cm.scalar, subr)
+        indLWP[subr] = func(LWP.flatten()) 
+    # index from radial spectra
+    subroutines=['spectral_length_median','spectral_length_moment','spectral_slope','spectral_slope_binned']
+    for subr in subroutines:
+        func = getattr(cm.scalar, subr)
+        indLWP[subr] = func(kv,ELWPr) 
+    # index for azimuthal spectra  
+    subr = 'spectral_anisotropy'
+    indLWP[subr] = cm.scalar.spectral_anisotropy(ELWPa)
+    
+
+    #subroutines = [name for name in dir(cm.scalar) if callable(getattr(cm.scalar, name))]
+    #for subroutine in subroutines:
+    #    func = getattr(cm.scalar, subroutine)
+    #    result = func(LWP)  # Call the function
+    #    print(f"{subroutine}: {result}")
+    
+
 # Vertical velocity fiels
 UT = np.squeeze(DATA['UT'])
 VT = np.squeeze(DATA['VT'])
@@ -143,11 +182,14 @@ E1da = np.zeros(( 72,  nz )) # 360° divided by 5° angles
 PI_E = np.zeros(( nkv, nz ))
 PI_Z = np.zeros(( nkv, nz ))
 var  = np.zeros(nz)
+    
 
 # Compute spectra at each altitude
 #zloop=[z[10]] # zloop=z by defaut
 zloop=z
 for idx,zi in enumerate(zloop):
+        
+    
     # Compute 2D TKE
     [UT2D,VT2D,WT2D] = [ij[idx,:,:] for ij in [UT,VT,WT]]
     TKE2D  = pow(tl.anomcalc(UT2D),2.)\
@@ -243,6 +285,10 @@ ds = xr.Dataset(
 )
 # Add a scalar variable (e.g., a global attribute)
 ds["PBL"] = PBLheight  # A single value
+for index in indLWP.keys():
+    indexLWP = index+'_LWP'
+    ds[indexLWP] = indLWP[index]  # A single value
+
 
 # Save to NetCDF (overwrites if exists)
 file_netcdf2=pathsave+file_netcdf+'.nc'

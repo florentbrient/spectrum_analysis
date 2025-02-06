@@ -52,8 +52,8 @@ for idxt,tt in enumerate(time):
     PBL  = data.PBL[idxt]
     idxpbl = tl.near(z,PBL).data
     
-    idxall=np.arange(0,idxpbl+30)
-    weights= dz[idxall] #+1 for all (small) overshoot
+    idxall=np.arange(0,idxpbl+1) #+1 for all (small) overshoot
+    weights= dz[idxall] 
     
     PI_E_sum[idxt,:]=np.average(data.PI_E[idxt,:,idxall], axis=-1, weights=weights)
     Erad_sum[idxt,:]=np.average(data.E1dr[idxt,:,idxall], axis=-1, weights=weights)
