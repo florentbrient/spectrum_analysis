@@ -28,8 +28,8 @@ import xarray as xr
 import sys
 
 
-file = 'FIR1k.1.V0006.OUT.002.nc'
-#file = sys.argv[1] # name of the file
+#file = 'FIR1k.1.V0006.OUT.002.nc'
+file = sys.argv[1] # name of the file
 
 # Open information from 'info_run_JZ.txt'
 pathinfo  = '../infos/'
