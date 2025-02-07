@@ -14,6 +14,13 @@ from scipy import integrate
 import Constants as CC
 from netCDF4 import Dataset
 import os
+import xarray as xr
+from glob import glob
+import pylab as plt
+from PIL import Image
+from matplotlib.ticker import ScalarFormatter
+from matplotlib.ticker import LogFormatterSciNotation
+
 
 
 # Read txt file for informations
@@ -28,6 +35,14 @@ def read_info(fileinfo):
         info_dict[key]=tmp[1]
     #print(info_dict)
     return info_dict
+
+def read_netcdfs(files, dim):
+    # glob expands paths with * to a list of files, like the unix shell
+    paths = sorted(glob(files))
+    datasets = [xr.open_dataset(p) for p in paths]
+    combined = xr.concat(datasets, dim)
+    return combined
+
 
 # Read dimensions informations in the NetCDF file
 def dimensions(DATA,var1D):
@@ -299,6 +314,130 @@ def compute_uBF(U,kk=None,dx=1,dy=1,filter=0):
     del Uf,U_hat,U_hatf
     #gc.collect()
     return kk,Uf_k #,Uf2_k
+
+
+################ Figures #####################
+
+# Convert to np array
+def fig_to_np_array(fig):
+    """Convert a Matplotlib figure to a NumPy array."""
+    fig.canvas.draw()  # Draw the canvas to update it
+    w, h = fig.canvas.get_width_height()
+    buf = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    return buf.reshape(h, w, 3)
+
+# Save figure
+def savefig2(fig, path):
+    #Image.fromarray(mplfig_to_npimage(fig)).save(path)
+    np_image = fig_to_np_array(fig)
+    Image.fromarray(np_image).save(path)
+    
+# adjust spines in figures
+def adjust_spines(ax, spines):
+    for loc, spine in ax.spines.items():
+        if loc in spines:
+            spine.set_position(('outward', 0))  # outward by 10 points
+            #print(dir(spine))
+            # FB : Need to update with Python3
+            #spine.set_smart_bounds(True)
+        else:
+            spine.set_color('none')  # don't draw spine
+
+    # turn off ticks where there is no spine
+    if 'left' in spines:
+        ax.yaxis.set_ticks_position('left')
+    else:
+        # no yaxis ticks
+        ax.yaxis.set_ticks([])
+
+    if 'bottom' in spines:
+        ax.xaxis.set_ticks_position('bottom')
+    else:
+        # no xaxis ticks
+        ax.xaxis.set_ticks([])
+
+def plot_flux(k,E,PI,kPBL=None,Euv=None,\
+              y1lab='xlab',y2lab='ylab',\
+              normalized=False,\
+              namefig='namefig',plotlines=False,\
+              xsize=(12,16),fts=18,lw=2.5):
+    
+    # Start plot 
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=xsize)
+
+    # If multiple time
+    ss = np.shape(E)
+    k  = np.repeat(k.data[np.newaxis, :], ss[0], axis=0)  # Adds new axis first
+    if ss[0] > 1 or normalized:
+        normalized=True
+        # Normalisation of k by kPBL
+        for ij in range(ss[0]):
+            print(ij,k.shape,kPBL.shape)
+            k[ij,:]=k[ij,:]/kPBL[ij]
+    
+    
+    # Plot Spectra and Energy
+    for ij in range(ss[0]):
+        ax1.loglog(k[ij,:],E[ij,:],lw=lw)
+        ax2.semilogx(k[ij,:],PI[ij,:],lw=lw)
+
+#    if Euv is not None:
+#        ax1.loglog(k,Euv,'b--')
+
+    if plotlines:
+        k0max=k.max()
+        k0min=k0max/2
+        k1max=k0max/2
+        k1min=k0max/8
+        k0 = np.linspace(k0min,k0max,1000)
+        k1 = np.linspace(k1min,k1max,1000)
+        
+        k1scale = 3e-2
+        ax1.plot(k1,k1scale*k1**(-5/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-5/3}}$')
+        # pentes en -3
+        k0scale = 3e-3
+        ax1.plot(k0,k0scale*k0**(-3),color='gray',linewidth=3,linestyle='-',label=r'$\mathbf{k^{-3}}$')
+        
+        # Legends
+        ax1.legend(title=None,shadow=True,numpoints=1,loc=2,
+                             bbox_to_anchor=(0.1,0.2),
+                             fontsize=12,title_fontsize=20)
+        
+    #ax1.set_title('Original Signal')
+    ax1.set_ylabel(y1lab,fontsize=fts)
+    ax2.set_ylabel(y2lab,fontsize=fts)
+    
+    ax2.axhline(y=0,color='k')
+    
+    xline=0
+    if normalized:
+        xline = 1
+    elif kPBL is not None :
+        xline = kPBL
+    if xline is not None:
+        ax1.axvline(x=xline,color='k',ls='--')
+        ax2.axvline(x=xline,color='k',ls='--')
+        
+    # Format x-axis and y-axis in scientific notation
+    formatter = ScalarFormatter(useMathText=True)
+    formatter.set_scientific(True)
+    formatter.set_powerlimits((-1, 1))  # Defines range for scientific notation
+    
+    for ax in [ax1,ax2]:
+        ax.xaxis.set_major_formatter(formatter)
+        ax.yaxis.set_major_formatter(formatter)
+        ax.set_xlabel('Wavenumber',fontsize=fts)
+        ax.tick_params(axis='both', labelsize=fts)
+        adjust_spines(ax,['left', 'bottom'])
+    
+    
+    
+    # Save figure
+    namefig=namefig.replace('XXXX',y2lab)+'.png'
+    savefig2(fig, namefig)
+    plt.close()
+    
+    return None
 
 
 ################ MESO-NH #####################
