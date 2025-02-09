@@ -21,6 +21,11 @@ prefix   = "FIR1k"
 filein0  = pathin+'*'+prefix+'*.nc'
 data     = tl.read_netcdfs(filein0, dim='time')
 
+# Dir for figures
+pathout = "../figures/"
+pathout+= prefix+'/'
+tl.mkdir(pathout)
+
 # wavelength, altitude, time and PBL height
 kv       = data.kv
 z        = data.z
@@ -53,14 +58,12 @@ for idxt,tt in enumerate(time):
     # Index of TKE
     var_sum[idxt]  = np.average(data.variance[idxt,idxall], axis=-1, weights=weights)
     
-    # Index of LWP
-    
     # Plot Figures for each time
-    namefig='test'
+    namefig='E_PI_'+prefix+'_'+"{:02}".format(tt)
     Er = np.tile(Erad_sum[idxt,:], (1, 1))
     PI = np.tile(PI_E_sum[idxt,:], (1, 1))
     kPBL = np.tile(kPBL.values, (1, 1))
-    tl.plot_flux(kv,Er,PI,
+    tl.plot_flux(kv,Er,PI=PI,
               kPBL=kPBL,\
               y1lab='E',y2lab='PiE',
               plotlines=True,namefig=namefig)
@@ -68,7 +71,7 @@ for idxt,tt in enumerate(time):
 
 # Plot Figures for all time
 namefig='test2'
-tl.plot_flux(kv,Erad_sum,PI_E_sum,
+tl.plot_flux(kv,Erad_sum,PI=PI_E_sum,
           kPBL=tl.z2k(data.PBL).data,
           y1lab='E',y2lab='PiE',
           plotlines=True,namefig=namefig)

@@ -155,7 +155,7 @@ ugradv = UT*dv_dx+VT*dv_dy+WT*dv_dz
 ugradw = UT*dw_dx+VT*dw_dy+WT*dw_dz    
 
 # Calculate Enstrophy fluxes?
-enstrophy=False
+enstrophy=True
 if enstrophy:
     ######## Enstrophy
     # Compute vorticity
