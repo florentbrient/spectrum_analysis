@@ -59,7 +59,7 @@ for idxt,tt in enumerate(time):
     var_sum[idxt]  = np.average(data.variance[idxt,idxall], axis=-1, weights=weights)
     
     # Plot Figures for each time
-    namefig='E_PI_'+prefix+'_'+"{:02}".format(tt)
+    namefig=pathout+'E_PI_'+prefix+'_'+"{:02}".format(tt)
     Er = np.tile(Erad_sum[idxt,:], (1, 1))
     PI = np.tile(PI_E_sum[idxt,:], (1, 1))
     kPBL = np.tile(kPBL.values, (1, 1))
@@ -70,7 +70,7 @@ for idxt,tt in enumerate(time):
 
 
 # Plot Figures for all time
-namefig='test2'
+namefig=pathout+'test2'
 tl.plot_flux(kv,Erad_sum,PI=PI_E_sum,
           kPBL=tl.z2k(data.PBL).data,
           y1lab='E',y2lab='PiE',

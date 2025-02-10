@@ -1,0 +1,998 @@
+------------------------------------------------------------------
+Job submit on jean-zay1 by rces071
+JobID=422338 Running_Node=jean-zay-pp4
+Node=1 Task=1
+------------------------------------------------------------------
+FIR1k.1.V0004.OUT.001.nc
+/lustre/fshomisc/home/rech/genlmd01/rces071/Github/spectrum_analysis/src/tools.py:281: ComplexWarning: Casting complex values to real discards the imaginary part
+  Uf_k[idx,:,:]=Uf
+*****
+Start analysis of  /lustre/fsn1/projects/rech/whl/rces071/mon_calcul//V5-7-0/FIRE3D/FI1024/REF/FIR1k.1.V0004.OUT.001.nc
+*****
+Error in opening  THLM
+Error in opening  THLM
+Error in opening  LWP
+(89, 1026, 1026)
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.030 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.003 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.371 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.864 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.986 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.996 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 50.073 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.851 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.923 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.573 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.659 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.542 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.473 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.479 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.284 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.435 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 50.028 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.311 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.184 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.171 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.044 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.045 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.931 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.207 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.592 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.376 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.618 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.966 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.034 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.927 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.955 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.269 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.207 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.528 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.050 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.005 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.949 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.881 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.879 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.953 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.117 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.428 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.201 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.147 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.845 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.974 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.808 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 50.082 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 50.297 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.147 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.219 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.234 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.133 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.242 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.355 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.574 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.520 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.275 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.238 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.701 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.289 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.228 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.501 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.333 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.577 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.205 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.265 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.541 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.233 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.546 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.099 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.286 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 48.986 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.611 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.609 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 50.786 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.302 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.720 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.786 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.479 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.937 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.433 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.429 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.414 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.630 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.676 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.345 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.252 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+Start compute Low Freq U,V,W
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Spectra Energy function took 49.328 s
+Start compute non-linear energy flux
+Start compute Low Freq VORTICITY
+** start U_hat **
+** start U_hat **
+** start U_hat **
+Start compute non-linear enstrophy flux
+
+real	172m12.058s
+user	160m49.963s
+sys	8m42.343s

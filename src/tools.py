@@ -102,6 +102,13 @@ def tryopen(vv,DATA):
         tmp = None
     return tmp
 
+# Make Dir
+def mkdir(path):
+   try:
+     os.mkdir(path)
+   except:
+     pass
+
 # Fin nearest point
 def near(array,value):
     idx=(abs(array-value)).argmin()
