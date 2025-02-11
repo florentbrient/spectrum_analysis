@@ -14,6 +14,8 @@ Input:
 
 import numpy as np
 import tools as tl
+import pylab as plt
+
 
 # Open all netcdf files
 pathin   = "../data/spectra/"
@@ -42,7 +44,6 @@ Erad_sum = np.zeros((nt,nkv))
 var_sum  = np.zeros(nt)
 
 for idxt,tt in enumerate(time):
-    
     # Find PBL height,
     # Remove first layer, and add one layer above the PBL (overshoot)
     PBL     = data.PBL[idxt]
@@ -70,7 +71,7 @@ for idxt,tt in enumerate(time):
 
 
 # Plot Figures for all time
-namefig=pathout+'test2'
+namefig=pathout+'E_PI_'+prefix+'_All'
 tl.plot_flux(kv,Erad_sum,PI=PI_E_sum,
           kPBL=tl.z2k(data.PBL).data,
           y1lab='E',y2lab='PiE',

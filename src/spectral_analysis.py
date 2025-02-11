@@ -20,7 +20,7 @@ First start: 30 Jan 2025
 
 import numpy as np
 import netCDF4 as nc
-import glob
+#import glob
 import tools as tl
 import cloudmetrics as cm
 import time
@@ -55,17 +55,6 @@ pathfig0= pathfig0+ivar['vtyp']+'/'
 
 if 'pathsave' in info_dict.keys():
     pathsave=info_dict['pathsave']
-
-# Import the list of files
-# importfiles=True
-# if importfiles:
-#     file0  = ivar['prefix']+'.1.'+'*'+'.'+ivar['OUT']+'*'+'.'+ivar['nc4']
-#     files  = glob.glob(path+'/'+file0, recursive=True)
-# else:
-#     # add your files here
-#     fil0   = "FIR1k.1.V0010.OUT.002.nc"
-#     files  = [path+'/'+file0]
-#print(path+'/'+file0,files)
 
 file=path+file
 
@@ -257,22 +246,7 @@ file_netcdf1=pathsave+file_netcdf+'.nc'
 
 kvazi=np.arange(0,360,5) # for azimuthal
 
-# data_dims={}
-# # Dimensions
-# data_dims[0]=kv
-# data_dims[1]=np.arange(0,360,5) # for azimuthal
-# data_dims[2]=z
-# # Variables to save
-# data={}
-# data['E1dr']=E1dr
-# data['E1da']=E1da
-# data['PI_E']=PI_E
-# data['PI_Z']=PI_Z
-# data['PBL']=PBLheight
-# data['var']=var
-# tl.writenetcdf(file_netcdf1,data_dims,data)
-    
-    
+# Save file    
 ds = xr.Dataset(
     {
     "E1dr": (("kv", "z"), E1dr),
@@ -289,6 +263,9 @@ for index in indLWP.keys():
     indexLWP = index+'_LWP'
     ds[indexLWP] = indLWP[index]  # A single value
 
+# Add spectra of LWP
+ds["E1dr_LWP"] = (("kv", "z"), ELWPr)
+ds["E1da_LWP"] = (("kvazi", "z"), ELWPa)
 
 # Save to NetCDF (overwrites if exists)
 file_netcdf2=pathsave+file_netcdf+'.nc'

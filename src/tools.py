@@ -444,7 +444,7 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
     # Format x-axis and y-axis in scientific notation
     formatter = ScalarFormatter(useMathText=True)
     formatter.set_scientific(True)
-    formatter.set_powerlimits((-1, 1))  # Defines range for scientific notation
+    formatter.set_powerlimits((-3, 3))  # Defines range for scientific notation
    
     axall = [ax1]
     if ax2:
