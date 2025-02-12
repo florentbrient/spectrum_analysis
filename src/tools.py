@@ -19,8 +19,9 @@ from glob import glob
 import pylab as plt
 from PIL import Image
 from matplotlib.ticker import ScalarFormatter
-from matplotlib.ticker import LogFormatterSciNotation
+from matplotlib.ticker import LogLocator, LogFormatterSciNotation
 import matplotlib.cm as cm
+from scipy.ndimage.filters import gaussian_filter1d
 
 
 # Read txt file for informations
@@ -39,6 +40,8 @@ def read_info(fileinfo):
 def read_netcdfs(files, dim):
     # glob expands paths with * to a list of files, like the unix shell
     paths = sorted(glob(files))
+    # FB: Error -  aim to be removed !
+    paths.remove('../data/spectra/Spectra_FIR1k_V0001_002.nc')
     datasets = [xr.open_dataset(p) for p in paths]
     combined = xr.concat(datasets, dim)
     return combined
@@ -113,6 +116,10 @@ def mkdir(path):
 def near(array,value):
     idx=(abs(array-value)).argmin()
     return idx
+
+# Smooth line
+def smooth(y,sigma=2):
+    return gaussian_filter1d(y, sigma=sigma)
 
 # Calculate the anamoly relative to the horizontal mean
 def anomcalc(tmp):
@@ -365,15 +372,20 @@ def adjust_spines(ax, spines):
 
 def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
               y1lab='xlab',y2lab='ylab',\
-              normalized=False,\
+              normalized=False,logx=True,\
               namefig='namefig',plotlines=False,\
-              xsize=(12,16),fts=18,lw=2.5):
+              smooth=None,\
+              xsize=(12,10),fts=18,lw=2.5):
     
     # Start plot
     fig, ax1 = plt.subplots(1,1,figsize=xsize)
     ax2 = False
     if PI is not None:
+        xsize=(12,16)
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=xsize)
+
+    # By default
+    namex = 'Wavenumber'
 
     # If multiple time
     ss = np.shape(E)
@@ -384,37 +396,46 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
         for ij in range(ss[0]):
             print(ij,k.shape,kPBL.shape)
             k[ij,:]=k[ij,:]/kPBL[ij]
+            namex = r"$k/k_h$"
 
     # colors
     if ss[0] == 1:
         colors = ['b']
-        labels = ['All']
+        labels = [namefig.split('_')[-1]]
     else:
         # Create colormap and labels
-        colors = cm.twilight_shifted(np.linspace(0, 1, ss[0]))
+        # def twilight_shifted
+        colors = cm.Spectral(np.linspace(0, 1, ss[0]))
         labels = ['t+'+str(ij).zfill(2)  for ij in range(ss[0])] 
     
     # Plot Spectra and Energy
     for ij in range(ss[0]):
-        ax1.loglog(k[ij,:],E[ij,:],lw=lw, color=colors[ij], label=labels[ij])
+        ax1.semilogx(k[ij,:],E[ij,:],lw=lw, color=colors[ij], label=labels[ij])
+        if smooth is not None:
+            ax1.semilogx(k[ij,:],smooth[ij,:],lw=lw-1, color='r',ls='--')
         if ax2:
             ax2.semilogx(k[ij,:],PI[ij,:],lw=lw, color=colors[ij], label=labels[ij])
 
-#    if Euv is not None:
-#        ax1.loglog(k,Euv,'b--')
+    if logx:
+        ax1.set_yscale("log")
 
-    if plotlines:
+    if plotlines and logx:
         k0max=k.max()
-        k0min=k0max/2
-        k1max=k0max/2
-        k1min=k0max/8
+        k0min=k0max/4
+        k1max=k0max/4
+        k1min=k0max/20
         k0 = np.linspace(k0min,k0max,1000)
         k1 = np.linspace(k1min,k1max,1000)
         
-        k0scale = 3e-3
-        k1scale = 3e-2
+        # scale to plot slopes - calculate offset
+        offset = kPBL[-1]**(-5/3.) # what the slope see
         if normalized:
-            k0scale,k1scale=1,1
+            offset = 1.
+        mean   = E[-1,near(k[-1,:],kPBL[-1])] # what the real y-axis plot
+        k1scale = mean/offset #3e-2
+        k0scale = mean/offset*(k1min/k0min) #3e-3
+        print(mean,offset,k1scale)
+        
         # pentes en -5/3
         ax1.plot(k1,k1scale*k1**(-5/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-5/3}}$')
         # pentes en -3
@@ -427,9 +448,49 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
         
     #ax1.set_title('Original Signal')
     ax1.set_ylabel(y1lab,fontsize=fts)
+    if logx:
+        ax1.yaxis.set_major_locator(LogLocator(base=10.0, subs=(1.0,), numticks=10))
+        ax1.yaxis.set_major_formatter(LogFormatterSciNotation())
     if ax2:
         ax2.set_ylabel(y2lab,fontsize=fts)
         ax2.axhline(y=0,color='k')
+        formatter = ScalarFormatter(useMathText=True)
+        formatter.set_scientific(True)
+        formatter.set_powerlimits((-3, 3))  # Uses scientific notation when needed
+        ax2.yaxis.set_major_formatter(formatter)
+        ax2.yaxis.get_offset_text().set_fontsize(12)  # Adjust font size as needed
+    
+    # Second axis (for Spectra only)
+    second_axis='top'
+    if second_axis == 'top':
+        secax = ax1.secondary_xaxis('top', functions=(z2k, z2k))
+        secax.set_xlabel(r'$\mathbf{\lambda \;(m)}$',fontsize=fts-10,labelpad=15)
+        for label in secax.get_xticklabels():
+            label.set_fontsize(fts-5)
+            label.set_fontweight('bold')
+        secax.tick_params('both', length=8, width=2, which='major', direction='out')
+        secax.tick_params('both', length=4, width=1, which='minor', direction='out')
+    else:
+        # It doesn't work
+        # Add a second set of tick labels below the x-axis
+        secax = ax1.twiny()  # Create a twin x-axis (it will align automatically)
+        #secax.set_scale("log")
+        secax.set_xlim(ax1.get_xlim())  # Ensure both axes align
+        
+        # Define tick locations for wavelength (bottom)
+        wavelength_ticks = np.logspace(-4, -1, num=4)  # Example: 10^2, 10^3, 10^4
+        ax1.set_xticks(wavelength_ticks)
+        ax1.xaxis.set_major_locator(LogLocator(base=10.0))  # Log ticks
+
+        # Convert wavelength ticks to wave number for top axis
+        wavenumber_ticks = z2k(wavelength_ticks[::-1])  # Reverse order for correct alignment
+        secax.set_xticks(wavenumber_ticks)
+        secax.xaxis.set_major_locator(LogLocator(base=10.0))  # Log ticks
+        secax.set_xticklabels([f"{k:.1e}" for k in wavenumber_ticks])  # Scientific notation
+        
+        # Set axis labels
+        secax.set_xlabel(r"Wave Number ($k = 2\pi/\lambda$) [1/nm]", fontsize=12, labelpad=10)
+
     
     xline=0
     if normalized:
@@ -442,20 +503,18 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
             ax2.axvline(x=xline,color='k',ls='--')
         
     # Format x-axis and y-axis in scientific notation
-    formatter = ScalarFormatter(useMathText=True)
-    formatter.set_scientific(True)
-    formatter.set_powerlimits((-3, 3))  # Defines range for scientific notation
+    #formatter.set_powerlimits((-3, 3))  # Defines range for scientific notation
    
     axall = [ax1]
     if ax2:
         axall+=[ax2]
     for ax in axall:
-        #ax.xaxis.set_major_formatter(formatter)
-        ax.yaxis.set_major_formatter(formatter)
-        ax.set_xlabel('Wavenumber',fontsize=fts)
+        ax.set_xlabel(namex,fontsize=fts)
         ax.tick_params(axis='both', labelsize=fts)
         adjust_spines(ax,['left', 'bottom'])
      
+    # useful?
+    #plt.tight_layout()
     # Save figure
     namefig=namefig.replace('XXXX',y2lab)+'.png'
     savefig2(fig, namefig)

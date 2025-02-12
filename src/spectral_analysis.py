@@ -264,8 +264,8 @@ for index in indLWP.keys():
     ds[indexLWP] = indLWP[index]  # A single value
 
 # Add spectra of LWP
-ds["E1dr_LWP"] = (("kv", "z"), ELWPr)
-ds["E1da_LWP"] = (("kvazi", "z"), ELWPa)
+ds["E1dr_LWP"] = (("kv",), ELWPr)
+ds["E1da_LWP"] = (("kvazi",), ELWPa)
 
 # Save to NetCDF (overwrites if exists)
 file_netcdf2=pathsave+file_netcdf+'.nc'
