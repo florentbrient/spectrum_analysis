@@ -115,6 +115,12 @@ namefig=pathout+'Er_'+prefix+'_All'
 tl.plot_flux(kv,Erad_sum,kPBL=kPBLall,
           y1lab='E',plotlines=True,namefig=namefig)
 
+namefig=pathout+'PI_'+prefix+'_All'
+namey=r'$\PI_E}$'
+tl.plot_flux(kv,PI_E_sum,kPBL=kPBLall,
+          y1lab='PI_E',y2lab='PiE',
+          plotlines=True,namefig=namefig, logx=False)
+
 # LWP
 namefig=pathout+'ErLWP_'+prefix+'_All'
 tl.plot_flux(kv,ErLWP,kPBL=kPBLall,\
@@ -123,7 +129,7 @@ tl.plot_flux(kv,ErLWP,kPBL=kPBLall,\
     
 # Plot increasing variance
 namefig=pathout+'ErLWP_'+prefix+'_DIffTime'
-tl.plot_flux(kv,diff_ErLWP,kPBL=kPBLall[::-1],\
+tl.plot_flux(kv,diff_ErLWP,kPBL=kPBLall[1::],\
           y1lab='E(t) - E(t-1)',plotlines=True,
           namefig=namefig, logx=False)
 

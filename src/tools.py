@@ -40,8 +40,6 @@ def read_info(fileinfo):
 def read_netcdfs(files, dim):
     # glob expands paths with * to a list of files, like the unix shell
     paths = sorted(glob(files))
-    # FB: Error -  aim to be removed !
-    paths.remove('../data/spectra/Spectra_FIR1k_V0001_002.nc')
     datasets = [xr.open_dataset(p) for p in paths]
     combined = xr.concat(datasets, dim)
     return combined
@@ -394,7 +392,6 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
         normalized=True
         # Normalisation of k by kPBL
         for ij in range(ss[0]):
-            print(ij,k.shape,kPBL.shape)
             k[ij,:]=k[ij,:]/kPBL[ij]
             namex = r"$k/k_h$"
 
@@ -406,7 +403,8 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
         # Create colormap and labels
         # def twilight_shifted
         colors = cm.Spectral(np.linspace(0, 1, ss[0]))
-        labels = ['t+'+str(ij).zfill(2)  for ij in range(ss[0])] 
+        dt     = 1
+        labels = ['t+'+str(ij+dt).zfill(2)  for ij in range(ss[0])] 
     
     # Plot Spectra and Energy
     for ij in range(ss[0]):
@@ -420,10 +418,10 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
         ax1.set_yscale("log")
 
     if plotlines and logx:
-        k0max=k.max()
-        k0min=k0max/4
-        k1max=k0max/4
-        k1min=k0max/20
+        k0max=k.max()/2
+        k0min=k.max()/4
+        k1max=k.max()/4
+        k1min=k.max()/20
         k0 = np.linspace(k0min,k0max,1000)
         k1 = np.linspace(k1min,k1max,1000)
         
@@ -433,7 +431,7 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
             offset = 1.
         mean   = E[-1,near(k[-1,:],kPBL[-1])] # what the real y-axis plot
         k1scale = mean/offset #3e-2
-        k0scale = mean/offset*(k1min/k0min) #3e-3
+        k0scale = mean/offset#*(k1min/k0min) #3e-3
         print(mean,offset,k1scale)
         
         # pentes en -5/3
@@ -442,9 +440,9 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
         ax1.plot(k0,k0scale*k0**(-3),color='gray',linewidth=3,linestyle='-',label=r'$\mathbf{k^{-3}}$')
         
         # Legends
-        ax1.legend(title=None,shadow=True,numpoints=1,loc=2,
-                             bbox_to_anchor=(0.1,0.2),
-                             fontsize=12,title_fontsize=20)
+    ax1.legend(title=None,shadow=True,numpoints=1,loc=2,
+               bbox_to_anchor=(1.0,1.0),
+               fontsize=12,title_fontsize=20)
         
     #ax1.set_title('Original Signal')
     ax1.set_ylabel(y1lab,fontsize=fts)
@@ -461,36 +459,60 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
         ax2.yaxis.get_offset_text().set_fontsize(12)  # Adjust font size as needed
     
     # Second axis (for Spectra only)
-    second_axis='top'
+    second_axis='bottom'
     if second_axis == 'top':
-        secax = ax1.secondary_xaxis('top', functions=(z2k, z2k))
-        secax.set_xlabel(r'$\mathbf{\lambda \;(m)}$',fontsize=fts-10,labelpad=15)
+        func = z2k; namex2 = r'$\mathbf{\lambda \;(m)}$'
+        if normalized:
+            namex2 = r'$\mathbf{\lambda/H \;(-)}$'
+            func=(lambda x: 1 / x)
+        secax = ax1.secondary_xaxis('top', functions=(func, func))
+        secax.set_xlabel(namex2,fontsize=fts,labelpad=15)
         for label in secax.get_xticklabels():
-            label.set_fontsize(fts-5)
-            label.set_fontweight('bold')
+            label.set_fontsize(fts)
+            #label.set_fontweight('bold')
         secax.tick_params('both', length=8, width=2, which='major', direction='out')
         secax.tick_params('both', length=4, width=1, which='minor', direction='out')
     else:
+        func = z2k; namex2 = r'$\lambda \;(m)}$'
+        if normalized:
+            namex2 = r'$\mathbf{\lambda/H \;(-)}$'
+            func=(lambda x: 1 / x)
+        secax = ax1.secondary_xaxis('bottom', functions=(func, func))
+        secax.spines["bottom"].set_position(("data", -1))
+        secax.set_xlabel(namex2,fontsize=fts,labelpad=-40)
+        for label in secax.get_xticklabels():
+            label.set_fontsize(fts)
+            #label.set_fontweight('bold')
+        secax.tick_params(axis="x", length=8, width=2, which='major', direction='in',pad=-30, colors="red")
+        secax.tick_params(axis="x", length=4, width=1, which='minor', direction='in',pad=-30, colors="red")
+        secax.xaxis.label.set_color("red")
+        
         # It doesn't work
         # Add a second set of tick labels below the x-axis
-        secax = ax1.twiny()  # Create a twin x-axis (it will align automatically)
-        #secax.set_scale("log")
-        secax.set_xlim(ax1.get_xlim())  # Ensure both axes align
+        # secax = ax1.twiny()  # Create a twin x-axis (it will align automatically)
+        # #secax.set_scale("log")
+        # secax.set_xlim(ax1.get_xlim())  # Ensure both axes align
         
-        # Define tick locations for wavelength (bottom)
-        wavelength_ticks = np.logspace(-4, -1, num=4)  # Example: 10^2, 10^3, 10^4
-        ax1.set_xticks(wavelength_ticks)
-        ax1.xaxis.set_major_locator(LogLocator(base=10.0))  # Log ticks
+        # # Define tick locations for wavelength (bottom)
+        # wavelength_ticks = np.logspace(-4, -1, num=4)  # Example: 10^2, 10^3, 10^4
+        # ax1.set_xticks(wavelength_ticks)
+        # ax1.xaxis.set_major_locator(LogLocator(base=10.0))  # Log ticks
 
-        # Convert wavelength ticks to wave number for top axis
-        wavenumber_ticks = z2k(wavelength_ticks[::-1])  # Reverse order for correct alignment
-        secax.set_xticks(wavenumber_ticks)
-        secax.xaxis.set_major_locator(LogLocator(base=10.0))  # Log ticks
-        secax.set_xticklabels([f"{k:.1e}" for k in wavenumber_ticks])  # Scientific notation
+        # # Convert wavelength ticks to wave number for top axis
+        # wavenumber_ticks = z2k(wavelength_ticks[::-1])  # Reverse order for correct alignment
+        # secax.set_xticks(wavenumber_ticks)
+        # secax.xaxis.set_major_locator(LogLocator(base=10.0))  # Log ticks
+        # secax.set_xticklabels([f"{k:.1e}" for k in wavenumber_ticks])  # Scientific notation
         
-        # Set axis labels
-        secax.set_xlabel(r"Wave Number ($k = 2\pi/\lambda$) [1/nm]", fontsize=12, labelpad=10)
+        # # Set axis labels
+        # secax.set_xlabel(r"Wave Number ($k = 2\pi/\lambda$) [1/nm]", fontsize=12, labelpad=10)
 
+        # Add grey shaded area between aspect 30 and 40 (See Wood and Hartmann, 2006)
+        # If normalized, Axis is k/kH -> Pour z/H = 40 --> k/kH = 1/40
+        if normalized:
+            k30 = 1./30.
+            k40 = 1./40.
+            ax1.axvspan(k40, k30, color="grey", alpha=0.3)  # Adjust alpha for transparency
     
     xline=0
     if normalized:
@@ -501,7 +523,9 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
         ax1.axvline(x=xline,color='k',ls='--')
         if ax2:
             ax2.axvline(x=xline,color='k',ls='--')
-        
+      
+    if not logx:
+        ax1.axhline(y=0,color='k')
     # Format x-axis and y-axis in scientific notation
     #formatter.set_powerlimits((-3, 3))  # Defines range for scientific notation
    
