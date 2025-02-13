@@ -42,7 +42,7 @@ dz = np.insert(dz, 0, dz[0])  # Assume first weight equals first diff
 nt,nkv,nz =np.shape(data.PI_E)
 PI_E_sum = np.zeros((nt,nkv))
 Erad_sum = np.zeros((nt,nkv))
-var_sum,kvmax,kvmaxLWP = [np.zeros(nt) for ij in range(3)]
+var_sum,kvmax,kvmaxLWP,kin = [np.zeros(nt) for ij in range(4)]
 Ers,ErLWPs = [np.zeros((nt,nkv)) for ij in range(2)]
 
 for idxt,tt in enumerate(time):
@@ -73,12 +73,18 @@ for idxt,tt in enumerate(time):
     kvmax[idxt]    = kv[Ers[idxt,:].argmax()]
     kvmaxLWP[idxt] = kv[ErLWPs[idxt,:].argmax()]
     
+    # Find scale of energy injection
+    Ecum  = np.cumsum(Er[0,:])/np.sum(Er[0,:])
+    eps   = 0.02 #1%
+    kin[idxt]   = kv[np.argmax(Ecum>eps)] # First time higher than eps
+    print('kin ',kin[idxt], tl.z2k(kin[idxt]), idxt)
+    
     
     # Plot Figures for each time
     tmp = np.tile(Ers[idxt,:], (1, 1))
     namefig=pathout+'E_PI_'+prefix+'_'+"{:02}".format(tt)
     tl.plot_flux(kv,Er,PI=PI,
-              kPBL=kPBL,smooth=tmp,\
+              kPBL=kPBL,kin=kin[idxt],smooth=tmp,\
               y1lab='E',y2lab='PiE',
               plotlines=True,namefig=namefig)
     
@@ -89,13 +95,12 @@ for idxt,tt in enumerate(time):
               y1lab='E',plotlines=True,
               namefig=namefig)
         
-
+ErLWP  = data.E1dr_LWP.data
 
 # Comparing variance and integral spectra
-ErLWP  = data.E1dr_LWP.data
-var_sp = np.trapz(ErLWP,kv)
-print(var_sp/data.var_LWP)
-plt.scatter(var_sp,data.var_LWP);plt.show()
+#var_sp = np.trapz(ErLWP,kv)
+#print(var_sp/data.var_LWP)
+#plt.scatter(var_sp,data.var_LWP);plt.show()
 
 # increasing variance (spectra (t-1) - spectra (t))
 diff_ErLWP=[]
@@ -103,7 +108,8 @@ diff_ErLWP+= [ErLWPs[tt,:]-ErLWPs[tt-1,:] for tt in time[1::]]
 diff_ErLWP = np.array(diff_ErLWP)
 
 
-# Plot Figures for all time
+
+# Plot TKE Figures for all time
 kPBLall = tl.z2k(data.PBL).data
 namefig=pathout+'E_PI_'+prefix+'_All'
 tl.plot_flux(kv,Erad_sum,PI=PI_E_sum,
@@ -132,6 +138,15 @@ namefig=pathout+'ErLWP_'+prefix+'_DIffTime'
 tl.plot_flux(kv,diff_ErLWP,kPBL=kPBLall[1::],\
           y1lab='E(t) - E(t-1)',plotlines=True,
           namefig=namefig, logx=False)
+
+# Plot temporal evolution
+namefig=pathout+'aspect_ratio_'+prefix
+Gamma = {}
+Gamma['TKE'] =kPBLall/kvmax #(2pi/kvmax)/(2pi/kPBL) 
+Gamma['LWP']= kPBLall/kvmaxLWP #(2pi/kvmax)/(2pi/kPBL) 
+tl.plot_time(time,Gamma,
+             namefig=namefig)
+
 
 
 

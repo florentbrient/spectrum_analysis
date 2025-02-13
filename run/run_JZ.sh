@@ -28,6 +28,6 @@ filepy="spectral_analysis.py"
 export MONORUN="python"
 
 module load miniforge/24.9.0
-ln -sf ../infos/info_run_JZ.txt ../infos/info_run.txt
+#ln -sf ../infos/info_run_JZ.txt ../infos/info_run.txt
 
 time ${MONORUN} ${path}'/'${filepy} ${file} 

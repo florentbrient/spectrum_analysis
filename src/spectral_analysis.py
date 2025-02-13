@@ -86,10 +86,11 @@ RCT = None
 if 'RCT' in DATA.variables.keys():
     #RCT = np.squeeze(DATA['RCT'])
     nvar = 'LWP'
-elif 'RNPM' in DATA.variables.keys():
+elif 'RVT' in DATA.variables.keys():
     nvar = 'PRW'
 else:
     nvar = None
+    sys.exit()
     
 if nvar is not None:
     LWP = tl.createnew(nvar,DATA,var1D)

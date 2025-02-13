@@ -368,7 +368,47 @@ def adjust_spines(ax, spines):
         # no xaxis ticks
         ax.xaxis.set_ticks([])
 
-def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
+
+def plot_time(time,Gamma,
+              namex='Aspect Ratio (-)',
+              namefig='test',
+              xsize=(14,10),fts=18,lw=2.5):
+    
+    # Start plot
+    fig, ax = plt.subplots(1,1,figsize=xsize)
+    
+    # Modify time (by deltaT/2)
+    time = time+(time[1]-time[0])/2.
+    
+    # Plot all Gamma
+    keys = Gamma.keys()
+    for ij,key in enumerate(keys):
+        ax.plot(time,Gamma[key],lw=lw,label=key)
+    
+    # Wood and Hartmann 2006
+    k1,k2 =30.,40.
+    ax.axhspan(k1, k2, color="grey", alpha=0.3)  # Adjust alpha for transparency
+    
+    # Legends
+    ax.legend(title=None,shadow=True,numpoints=1,loc=2,
+               bbox_to_anchor=(0.0,0.9),
+               fontsize=12,title_fontsize=20)
+
+    ax.set_xlabel('Time (hours)',fontsize=fts)    
+    ax.set_ylabel(namex,fontsize=fts)
+    ax.tick_params(axis='both', labelsize=fts)
+    adjust_spines(ax,['left', 'bottom'])
+        
+    # Save figure
+    namefig+='.png'
+    savefig2(fig, namefig)
+    plt.close('all')
+    
+    return None
+    
+    
+
+def plot_flux(k,E,PI=None,kPBL=None,kin=None,Euv=None,\
               y1lab='xlab',y2lab='ylab',\
               normalized=False,logx=True,\
               namefig='namefig',plotlines=False,\
@@ -517,12 +557,10 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
     xline=0
     if normalized:
         xline = 1
-    elif kPBL is not None :
-        xline = kPBL
-    if xline is not None:
-        ax1.axvline(x=xline,color='k',ls='--')
-        if ax2:
-            ax2.axvline(x=xline,color='k',ls='--')
+    else:
+        if kPBL is not None :
+            xline = kPBL
+    
       
     if not logx:
         ax1.axhline(y=0,color='k')
@@ -533,6 +571,11 @@ def plot_flux(k,E,PI=None,kPBL=None,Euv=None,\
     if ax2:
         axall+=[ax2]
     for ax in axall:
+        if xline is not None:
+            ax.axvline(x=xline,color='k',ls='--')
+        if kin is not None:
+            ax.axvline(x=kin,color='g',ls='--')
+        
         ax.set_xlabel(namex,fontsize=fts)
         ax.tick_params(axis='both', labelsize=fts)
         adjust_spines(ax,['left', 'bottom'])
