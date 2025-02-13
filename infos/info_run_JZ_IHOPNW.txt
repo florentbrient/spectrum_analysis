@@ -1,0 +1,10 @@
+machine: jean-zay
+path: /lustre/fsn1/projects/rech/whl/rces071/mon_calcul/
+vtyp: V5-7-0
+case: IHOP3D
+sens: IHOPNW
+prefix: IHOP0
+subdir: NW
+OUT: OUT
+nc4: nc
+pathsave: /linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/data/spectra/

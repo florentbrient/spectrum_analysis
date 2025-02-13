@@ -84,10 +84,18 @@ kPBL      = tl.z2k(PBLheight) #rad/km
 # By default, save information about the LWP (from cloudmetrics)
 RCT = None
 if 'RCT' in DATA.variables.keys():
-    RCT = np.squeeze(DATA['RCT'])
-    LWP = tl.createnew('LWP',DATA,var1D)
+    #RCT = np.squeeze(DATA['RCT'])
+    nvar = 'LWP'
+elif 'RNPM' in DATA.variables.keys():
+    nvar = 'PRW'
+else:
+    nvar = None
+    
+if nvar is not None:
+    LWP = tl.createnew(nvar,DATA,var1D)
     LWP = np.squeeze(LWP)
     
+    # Here the variables are named LWP
     kv, ELWPr, ELWPa = cm.scalar.compute_spectra(
         LWP,dx=dx,periodic_domain=True,apply_detrending=False,
         window=None)
@@ -260,12 +268,12 @@ ds = xr.Dataset(
 # Add a scalar variable (e.g., a global attribute)
 ds["PBL"] = PBLheight  # A single value
 for index in indLWP.keys():
-    indexLWP = index+'_LWP'
+    indexLWP = index+'_'+nvar
     ds[indexLWP] = indLWP[index]  # A single value
 
 # Add spectra of LWP
-ds["E1dr_LWP"] = (("kv",), ELWPr)
-ds["E1da_LWP"] = (("kvazi",), ELWPa)
+ds["E1dr_"+nvar] = (("kv",), ELWPr)
+ds["E1da_"+nvar] = (("kvazi",), ELWPa)
 
 # Save to NetCDF (overwrites if exists)
 file_netcdf2=pathsave+file_netcdf+'.nc'

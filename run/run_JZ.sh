@@ -2,8 +2,8 @@
 #SBATCH -J SPEC
 #SBATCH -N 1          # nodes number
 #SBATCH -n 1          # CPUs number (on all nodes) 
-##SBATCH -q prepost
-#SBATCH --partition=prepost
+#SBATCH -q qos_cpu-t3
+##SBATCH --partition=prepost
 #SBATCH -o SPEC.eo%j   #
 #SBATCH -e SPEC.eo%j   #
 #SBATCH -t 04:59:00    # time limit
