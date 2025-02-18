@@ -22,6 +22,7 @@ from matplotlib.ticker import ScalarFormatter
 from matplotlib.ticker import LogLocator, LogFormatterSciNotation
 import matplotlib.cm as cm
 from scipy.ndimage.filters import gaussian_filter1d
+import sys
 
 
 # Read txt file for informations
@@ -77,13 +78,30 @@ def findpbltop(typ,DATA,var1D,idx=None,offset=0.25):
         temp   = np.nanmean(tmp,axis=(-1))
     else:
         temp   = np.nanmean(tmp,axis=(1,2,))
-            
+    
+    zz = tryopen(var1D[0],DATA)
+    #print(zz)
     #THLMint = integrate.cumtrapz(temp)/np.arange(1,len(temp))
-    THLMint = integrate.cumulative_trapezoid(temp)/np.arange(1,len(temp))
+    #THLMint = integrate.cumulative_trapezoid(temp)/np.arange(1,len(temp))
+    # Correction
+    THLMint = integrate.cumulative_trapezoid(temp,zz,initial=0)/(zz-zz[0])
+    #print(THLMint)
+    
     #DT      = temp[:-1]-(THLMint+offset)
     # Modif
-    DT      = temp[1:]-(THLMint+offset)
+    DT      = temp-(THLMint+offset)
     idx     = np.argmax(DT>0)
+    #print(DT)
+    
+    # Plot results
+    # plt.figure(figsize=(6, 6))
+    # plt.plot(temp, zz, 'ro-', label="Raw Temperature")
+    # plt.plot(THLMint, zz, 'bo-', label="Altitude-Weighted Cumulative Avg Temp")
+    # plt.axhline(y=zz[idx],color='k')
+    # plt.xlabel("Temperature (°C)")
+    # plt.ylabel("Altitude (m)")
+    # plt.show()
+    # sys.exit()
     return idx
 
 # Convert altitude to wavenumber
@@ -371,7 +389,7 @@ def adjust_spines(ax, spines):
 
 def plot_time(time,Gamma,
               namex='Aspect Ratio (-)',
-              namefig='test',
+              namefig='test',title=None,
               xsize=(14,10),fts=18,lw=2.5):
     
     # Start plot
@@ -386,13 +404,16 @@ def plot_time(time,Gamma,
         ax.plot(time,Gamma[key],lw=lw,label=key)
     
     # Wood and Hartmann 2006
-    k1,k2 =30.,40.
-    ax.axhspan(k1, k2, color="grey", alpha=0.3)  # Adjust alpha for transparency
+    #k1,k2 =30.,40.
+    #ax.axhspan(k1, k2, color="grey", alpha=0.3)  # Adjust alpha for transparency
     
     # Legends
     ax.legend(title=None,shadow=True,numpoints=1,loc=2,
                bbox_to_anchor=(0.0,0.9),
                fontsize=12,title_fontsize=20)
+    
+    if title is not None:
+        plt.title(title)
 
     ax.set_xlabel('Time (hours)',fontsize=fts)    
     ax.set_ylabel(namex,fontsize=fts)
@@ -461,7 +482,7 @@ def plot_flux(k,E,PI=None,kPBL=None,kin=None,Euv=None,\
         k0max=k.max()/2
         k0min=k.max()/4
         k1max=k.max()/4
-        k1min=k.max()/20
+        k1min=k.max()/10
         k0 = np.linspace(k0min,k0max,1000)
         k1 = np.linspace(k1min,k1max,1000)
         
@@ -471,13 +492,13 @@ def plot_flux(k,E,PI=None,kPBL=None,kin=None,Euv=None,\
             offset = 1.
         mean   = E[-1,near(k[-1,:],kPBL[-1])] # what the real y-axis plot
         k1scale = mean/offset #3e-2
-        k0scale = mean/offset#*(k1min/k0min) #3e-3
+        k0scale = mean/kPBL[-1]**(-3.)#*(k1min/k0min) #3e-3
         print(mean,offset,k1scale)
         
         # pentes en -5/3
         ax1.plot(k1,k1scale*k1**(-5/3.),color='gray',linewidth=3,linestyle='--',label=r'$\mathbf{k^{-5/3}}$')
         # pentes en -3
-        ax1.plot(k0,k0scale*k0**(-3),color='gray',linewidth=3,linestyle='-',label=r'$\mathbf{k^{-3}}$')
+        #ax1.plot(k0,k0scale*k0**(-3),color='gray',linewidth=3,linestyle='-',label=r'$\mathbf{k^{-3}}$')
         
         # Legends
     ax1.legend(title=None,shadow=True,numpoints=1,loc=2,

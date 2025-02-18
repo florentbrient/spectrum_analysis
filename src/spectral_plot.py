@@ -15,14 +15,20 @@ Input:
 import numpy as np
 import tools as tl
 import pylab as plt
+#from scipy import integrate
 
 
 
 # Open all netcdf files
 pathin   = "../data/spectra/"
-prefix   = "FIR1k"
+prefix   = "FIR1k" #"IHOP" #"FIR1k"
 filein0  = pathin+'*'+prefix+'*.nc'
 data     = tl.read_netcdfs(filein0, dim='time')
+
+# Name of var 2D: LWP or PRW
+nvar = "LWP"
+if prefix=="IHOP":
+    nvar = "PRW"
 
 # Dir for figures
 pathout = "../figures/"
@@ -40,10 +46,10 @@ dz = np.insert(dz, 0, dz[0])  # Assume first weight equals first diff
 
 # Initializing
 nt,nkv,nz =np.shape(data.PI_E)
-PI_E_sum = np.zeros((nt,nkv))
-Erad_sum = np.zeros((nt,nkv))
+PI_E_sum,PI_Z_sum,Erad_sum = [np.zeros((nt,nkv)) for ij in range(3)]
 var_sum,kvmax,kvmaxLWP,kin = [np.zeros(nt) for ij in range(4)]
 Ers,ErLWPs = [np.zeros((nt,nkv)) for ij in range(2)]
+varLWP = "E1dr_"+nvar
 
 for idxt,tt in enumerate(time):
     # Find PBL height,
@@ -57,6 +63,8 @@ for idxt,tt in enumerate(time):
     # Averaging between the surface and PBL
     PI_E_sum[idxt,:]=np.average(data.PI_E[idxt,:,idxall], axis=-1, weights=weights)
     Erad_sum[idxt,:]=np.average(data.E1dr[idxt,:,idxall], axis=-1, weights=weights)
+    PI_Z_sum[idxt,:]=np.average(data.PI_Z[idxt,:,idxall], axis=-1, weights=weights)
+
     
     # Index of TKE
     var_sum[idxt]  = np.average(data.variance[idxt,idxall], axis=-1, weights=weights)
@@ -65,7 +73,7 @@ for idxt,tt in enumerate(time):
     Er = np.tile(Erad_sum[idxt,:], (1, 1))
     PI = np.tile(PI_E_sum[idxt,:], (1, 1))
     kPBL = np.tile(kPBL.values, (1, 1))
-    ErLWP = np.tile(data.E1dr_LWP[idxt,:], (1, 1))
+    ErLWP = np.tile(data[varLWP][idxt,:], (1, 1))
     
     # Smooth and calculate max
     Ers[idxt,:]    = tl.smooth(Er,sigma=1)
@@ -74,10 +82,23 @@ for idxt,tt in enumerate(time):
     kvmaxLWP[idxt] = kv[ErLWPs[idxt,:].argmax()]
     
     # Find scale of energy injection
-    Ecum  = np.cumsum(Er[0,:])/np.sum(Er[0,:])
-    eps   = 0.02 #1%
-    kin[idxt]   = kv[np.argmax(Ecum>eps)] # First time higher than eps
-    print('kin ',kin[idxt], tl.z2k(kin[idxt]), idxt)
+    # Based on the gradient of PI_E
+    
+    #Ecum  = np.cumsum(PI[0,:])/np.sum(PI[07,:])
+    #Ecum = integrate.cumulative_trapezoid(PI[0,:],kv,initial=0)/(kv-kv[0])
+    #print(kv,Ecum)
+    # Wrong: change by np.trapz??? np.trapzcum?
+    
+    #eps   = 0.02 #1%
+    #kin[idxt]   = kv[np.argmax(Ecum>eps)] # First time higher than eps
+    
+    grad = np.gradient(PI_E_sum[idxt,:],kv)
+    grad = tl.smooth(grad,sigma=2)
+    if grad.max()>0:
+        kin[idxt]  = kv[np.argmax(grad)] # First time higher than eps
+        print('kin ',kin[idxt], tl.z2k(kin[idxt]), idxt)
+    else:
+        kin[idxt]  = np.nan 
     
     
     # Plot Figures for each time
@@ -90,12 +111,12 @@ for idxt,tt in enumerate(time):
     
     # Plot LWP spectra
     tmp = np.tile(ErLWPs[idxt,:], (1, 1))
-    namefig=pathout+'ErLWP_'+prefix+'_'+"{:02}".format(tt)
+    namefig=pathout+'Er'+nvar+'_'+prefix+'_'+"{:02}".format(tt)
     tl.plot_flux(kv,ErLWP,kPBL=kPBL,smooth=tmp,\
-              y1lab='E',plotlines=True,
+              y1lab=r'$E_${nvar}}}$',plotlines=True,
               namefig=namefig)
         
-ErLWP  = data.E1dr_LWP.data
+ErLWP  = data[varLWP].data
 
 # Comparing variance and integral spectra
 #var_sp = np.trapz(ErLWP,kv)
@@ -122,30 +143,63 @@ tl.plot_flux(kv,Erad_sum,kPBL=kPBLall,
           y1lab='E',plotlines=True,namefig=namefig)
 
 namefig=pathout+'PI_'+prefix+'_All'
-namey=r'$\PI_E}$'
+namey=r'$\PI_E$'
 tl.plot_flux(kv,PI_E_sum,kPBL=kPBLall,
           y1lab='PI_E',y2lab='PiE',
           plotlines=True,namefig=namefig, logx=False)
 
 # LWP
-namefig=pathout+'ErLWP_'+prefix+'_All'
+namefig=pathout+'Er'+nvar+'_'+prefix+'_All'
 tl.plot_flux(kv,ErLWP,kPBL=kPBLall,\
           y1lab='E',plotlines=True,namefig=namefig)
     
     
 # Plot increasing variance
-namefig=pathout+'ErLWP_'+prefix+'_DIffTime'
+namefig=pathout+'Er'+nvar+'_'+prefix+'_DIffTime'
 tl.plot_flux(kv,diff_ErLWP,kPBL=kPBLall[1::],\
           y1lab='E(t) - E(t-1)',plotlines=True,
           namefig=namefig, logx=False)
 
-# Plot temporal evolution
+# Plot temporal evolution of aspect ratio
 namefig=pathout+'aspect_ratio_'+prefix
 Gamma = {}
 Gamma['TKE'] =kPBLall/kvmax #(2pi/kvmax)/(2pi/kPBL) 
-Gamma['LWP']= kPBLall/kvmaxLWP #(2pi/kvmax)/(2pi/kPBL) 
+Gamma[nvar]= kPBLall/kvmaxLWP #(2pi/kvmax)/(2pi/kPBL) 
 tl.plot_time(time,Gamma,
+             namex='Aspect Ratio (-)',
              namefig=namefig)
+
+# Plot temporal evolution of length scale of epsilon_in
+namefig=pathout+'lambdaIn_'+prefix
+title=r'Relative scale of energy injection $\epsilon_{in}$'
+lambdaIn = {}
+lambdaIn['LambdaEpsIn']=kPBLall/kin
+tl.plot_time(time,lambdaIn,
+             namex=r'$\lambda_{in}$ /$\lambda_{PBL}$  (-)',
+             title=title,
+             namefig=namefig)
+
+
+# Test Emma figure
+x = data.spectral_slope_binned_LWP
+y = np.max(ErLWPs,axis=1)
+
+# Create scatter plot
+plt.scatter(x, y, color='blue')
+
+# Annotate each point with its corresponding number
+for i, (xi, yi) in enumerate(zip(x, y), start=1):
+    plt.text(xi+0.1, yi+0.1, str(i), fontsize=8, ha='center', va='center', color='red')
+#             bbox=dict(facecolor='red', edgecolor='black', boxstyle='circle,pad=0.3'))
+
+# Labels and title
+plt.xlabel("SLope")
+plt.ylabel("Max")
+plt.title("Scatter Plot with Data Numbers")
+
+plt.show()
+
+
 
 
 
