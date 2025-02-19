@@ -1,0 +1,14 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=686427 Running_Node=r1i3n21
+Node=1 Task=10
+------------------------------------------------------------------
+FIR1k.1.V0013.OUT.002.nc
+/lustre/fshomisc/home/rech/genlmd01/rces071/Github/spectrum_analysis/src/tools.py:292: ComplexWarning: Casting complex values to real discards the imaginary part
+  Uf_k[idx,:,:]=Uf
+/var/spool/slurmd/job686427/slurm_script: line 33: 3367377 Killed                  ${MONORUN} ${path}'/'${filepy} ${file}
+
+real	1m36.307s
+user	0m53.764s
+sys	0m17.165s
+slurmstepd: error: Detected 1 oom_kill event in StepId=686427.batch. Some of the step tasks have been OOM Killed.

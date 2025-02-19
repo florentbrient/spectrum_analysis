@@ -1,0 +1,15 @@
+------------------------------------------------------------------
+Job submit on jean-zay2 by rces071
+JobID=724866 Running_Node=jean-zay-pp2
+Node=1 Task=1
+------------------------------------------------------------------
+IHOP0.1.NWV01.OUT.011.nc
+/var/spool/slurmd/job724866/slurm_script: line 31: module: command not found
+Traceback (most recent call last):
+  File "/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src//spectral_analysis.py", line 22, in <module>
+    import netCDF4 as nc
+ModuleNotFoundError: No module named 'netCDF4'
+
+real	0m8.856s
+user	0m0.208s
+sys	0m0.162s
