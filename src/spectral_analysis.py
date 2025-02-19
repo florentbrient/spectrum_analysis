@@ -48,10 +48,10 @@ if 'subdir' in info_dict.keys():
     path+=info_dict['subdir']+'/'
 
 # Path for the saved output or figures
-pathfig0=info_dict['path']
-if 'pathfig' in info_dict.keys():
-    pathfig0=info_dict['pathfig']
-pathfig0= pathfig0+ivar['vtyp']+'/'
+#pathfig0=info_dict['path']
+#if 'pathfig' in info_dict.keys():
+#    pathfig0=info_dict['pathfig']
+#pathfig0= pathfig0+ivar['vtyp']+'/'
 
 if 'pathsave' in info_dict.keys():
     pathsave=info_dict['pathsave']
@@ -262,7 +262,7 @@ ds = xr.Dataset(
     "E1da": (("kvazi", "z"), E1da),
     "PI_E": (("kv", "z"), PI_E),
     "PI_Z": (("kv", "z"), PI_Z),
-    "variance": (("z",),var),
+    "varTKE": (("z",),var),
     },
     coords={"kv":kv, "z": z, "kvazi":kvazi}
 )

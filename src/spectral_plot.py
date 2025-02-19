@@ -94,11 +94,12 @@ for idxt,tt in enumerate(time):
     
     grad = np.gradient(PI_E_sum[idxt,:],kv)
     grad = tl.smooth(grad,sigma=2)
-    if grad.max()>0:
-        kin[idxt]  = kv[np.argmax(grad)] # First time higher than eps
-        print('kin ',kin[idxt], tl.z2k(kin[idxt]), idxt)
-    else:
-        kin[idxt]  = np.nan 
+    # Need a condition here -> not find a good one !
+    #if np.mean(grad)>0:
+    kin[idxt]  = kv[np.argmax(grad)] # First time higher than eps
+    print('kin ',kin[idxt], tl.z2k(kin[idxt]), idxt)
+    #else:
+    #    kin[idxt]  = np.nan 
     
     
     # Plot Figures for each time
@@ -165,23 +166,39 @@ namefig=pathout+'aspect_ratio_'+prefix
 Gamma = {}
 Gamma['TKE'] =kPBLall/kvmax #(2pi/kvmax)/(2pi/kPBL) 
 Gamma[nvar]= kPBLall/kvmaxLWP #(2pi/kvmax)/(2pi/kPBL) 
+LambdaEpsIn = kPBLall/kin
+lambdaIn = {}
+lambdaIn['LambdaEpsIn']=LambdaEpsIn
 tl.plot_time(time,Gamma,
+             lambdaIn=LambdaEpsIn,
              namex='Aspect Ratio (-)',
              namefig=namefig)
 
 # Plot temporal evolution of length scale of epsilon_in
 namefig=pathout+'lambdaIn_'+prefix
 title=r'Relative scale of energy injection $\epsilon_{in}$'
-lambdaIn = {}
-lambdaIn['LambdaEpsIn']=kPBLall/kin
 tl.plot_time(time,lambdaIn,
              namex=r'$\lambda_{in}$ /$\lambda_{PBL}$  (-)',
              title=title,
              namefig=namefig)
 
 
+
+# Plot Variance
+namefig=pathout+'variance_'+prefix
+Gamma = {}
+Gamma['Var TKE'] =  var_sum
+Gamma['Var '+nvar]= data['var_'+nvar]*10
+lambdaIn['LambdaEpsIn']=LambdaEpsIn
+tl.plot_time(time,Gamma,
+             namex='Variance',
+             namefig=namefig)
+
+
+
 # Test Emma figure
-x = data.spectral_slope_binned_LWP
+var = "spectral_slope_binned_"+nvar
+x = data[var]
 y = np.max(ErLWPs,axis=1)
 
 # Create scatter plot
