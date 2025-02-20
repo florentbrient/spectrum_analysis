@@ -1,0 +1,70 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=781636 Running_Node=jean-zay-pp4
+Node=1 Task=1
+------------------------------------------------------------------
+FIR1k.1.V0012.OUT.001.nc
+Error in opening  THLM
+Error in opening  THLM
+key  MNHVERSION
+(3,)
+key  MASDEV
+()
+key  BUGFIX
+()
+key  BIBUSER
+(16,)
+key  PROGRAM
+(16,)
+key  STORAGE_TYPE
+(16,)
+key  MY_NAME
+(32,)
+key  DAD_NAME
+(32,)
+key  UT
+(89, 1026, 1026)
+key  VT
+(89, 1026, 1026)
+key  WT
+(89, 1026, 1026)
+Range :  -5.0 5.0 0.2 WT 1.0 1
+Range :  -5.0 5.0 0.2 WT 1.0 1
+key  RVT
+(89, 1026, 1026)
+key  THT
+(89, 1026, 1026)
+key  PABST
+(89, 1026, 1026)
+key  RCT
+(89, 1026, 1026)
+Range :  0 0.0007 1e-05 RCT 1000.0 1
+Range :  0 0.0007 1e-05 RCT 1000.0 1
+key  SVT004
+(89, 1026, 1026)
+key  SVT005
+(89, 1026, 1026)
+key  SVT006
+(89, 1026, 1026)
+key  ni
+(1026,)
+key  nj
+(1026,)
+key  ni_u
+(1026,)
+key  nj_u
+(1026,)
+key  ni_v
+(1026,)
+key  nj_v
+(1026,)
+key  level
+(89,)
+key  level_w
+(89,)
+key  time
+()
+
+real	0m47.814s
+user	0m21.068s
+sys	0m10.479s

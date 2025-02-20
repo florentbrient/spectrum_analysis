@@ -1,0 +1,17 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=781450 Running_Node=jean-zay-pp4
+Node=1 Task=1
+------------------------------------------------------------------
+FIR1k.1.V0012.OUT.002.nc
+Traceback (most recent call last):
+  File "/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src///Energy_injection.py", line 124, in <module>
+    DATA    = nc.Dataset(file,'r')
+              ^^^^^^^^^^^^^^^^^^^^
+  File "src/netCDF4/_netCDF4.pyx", line 2521, in netCDF4._netCDF4.Dataset.__init__
+  File "src/netCDF4/_netCDF4.pyx", line 2158, in netCDF4._netCDF4._ensure_nc_success
+FileNotFoundError: [Errno 2] No such file or directory: '/lustre/fsn1/projects/rech/whl/rces071/mon_calcul//V5-7-0/IHOP3D/IHOPNW/NW/FIR1k.1.V0012.OUT.002.nc'
+
+real	0m6.771s
+user	0m1.476s
+sys	0m1.407s

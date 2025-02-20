@@ -8,3 +8,4 @@ subdir: REF
 OUT: OUT
 nc4: nc
 pathsave: /linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/data/spectra/
+pathfig: /linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/figures/

@@ -1,0 +1,67 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=781385 Running_Node=jean-zay-pp2
+Node=1 Task=1
+------------------------------------------------------------------
+IHOP0.1.NWV01.OUT.001.nc
+Error in opening  THLM
+Error in opening  RCT
+Error in opening  THLM
+key  MNHVERSION
+(3,)
+key  MASDEV
+()
+key  BUGFIX
+()
+key  BIBUSER
+(16,)
+key  PROGRAM
+(16,)
+key  STORAGE_TYPE
+(16,)
+key  MY_NAME
+(32,)
+key  DAD_NAME
+(32,)
+key  UT
+(136, 514, 514)
+key  VT
+(136, 514, 514)
+key  WT
+(136, 514, 514)
+Range :  -5.0 5.0 0.2 WT 1.0 1
+Range :  -5.0 5.0 0.2 WT 1.0 1
+key  RVT
+(136, 514, 514)
+key  THT
+(136, 514, 514)
+key  PABST
+(136, 514, 514)
+key  SVT004
+(136, 514, 514)
+key  SVT005
+(136, 514, 514)
+key  SVT006
+(136, 514, 514)
+key  ni
+(514,)
+key  nj
+(514,)
+key  ni_u
+(514,)
+key  nj_u
+(514,)
+key  ni_v
+(514,)
+key  nj_v
+(514,)
+key  level
+(136,)
+key  level_w
+(136,)
+key  time
+()
+
+real	0m21.804s
+user	0m12.769s
+sys	0m4.641s

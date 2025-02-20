@@ -1,0 +1,15 @@
+------------------------------------------------------------------
+Job submit on jean-zay3 by rces071
+JobID=781564 Running_Node=jean-zay-pp4
+Node=1 Task=1
+------------------------------------------------------------------
+FIR1k.1.V0012.OUT.001.nc
+Traceback (most recent call last):
+  File "/linkhome/rech/genlmd01/rces071/Github/spectrum_analysis/src///Energy_injection.py", line 108, in <module>
+    pathout=info_dict['pathfig']
+            ~~~~~~~~~^^^^^^^^^^^
+KeyError: 'pathfig'
+
+real	0m4.999s
+user	0m1.417s
+sys	0m1.320s

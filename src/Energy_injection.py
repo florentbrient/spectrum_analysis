@@ -29,7 +29,7 @@ def plot_figure(datavar,xy,
                 xsize=(12,9),fts=18,lw=2):
     # Infos for the figure
     mtyp    = 'Mean'
-    infofig = tl.infosfigures(case,var,mtyp=mtyp)
+    infofig = tl.infosfigures(prefix,var,mtyp=mtyp)
     levels  = infofig['levels']
 #    zminmax = infofig['zminmax']
     xx, yy  = np.meshgrid(xy[0],xy[1])
@@ -112,6 +112,9 @@ else:
 
     file=path+file
 
+    tab = file.split('/')[-1].split('.')
+    prefix,vinfo, tinfo = tab[0],tab[2],tab[4]
+
 #case,sens,sens2,prefix,vtype = 'FIRE3D','FI1024','FIR1k','020','V0001'
 #file = "/home/fbrient/GitHub/objects-LES/data/FIRE3D/FI1024/sel_FIR1k.1.V0001.OUT.020.nc"
 
@@ -122,7 +125,9 @@ DATA    = nc.Dataset(file,'r')
 
 
 # Dimensions
-var1D  = ['vertical_levels','S_N_direction','W_E_direction'] #Z,Y,X
+#var1D  = ['vertical_levels','S_N_direction','W_E_direction'] #Z,Y,X
+var1D = ['level','nj','ni'] #Z,Y,X
+
 namez  = var1D[0]
 data1D,nzyx,sizezyx = [OrderedDict() for ij in range(3)]
 for ij in var1D:
@@ -139,7 +144,7 @@ dz.insert(-1,ALT[-1]-ALT[-2])
 nxnynz = np.array([nxny*ij for ij in dz]) # volume of each level
 nxnynz = np.repeat(np.repeat(nxnynz[:, np.newaxis, np.newaxis]
                              , sizezyx[var1D[1]], axis=1), sizezyx[var1D[2]], axis=2)
-dx     = nzyx['W_E_direction']
+dx     = nzyx[var1D[-1]]
 
 # Find Boundary-layer height (zi)
 inv               = 'THLM'
@@ -149,19 +154,21 @@ idxzi = tl.findpbltop(inv,DATA,var1D,offset=threshold)
 
 ################ Figures without objects ##############################
 # Dir for figures
-namefig0=pathout+'zview_{VVV}_{TIME}_idx{ZZZ}'
+#namefig0=pathout+'zview_{VVV}_{TIME}_idx{ZZZ}'
+namefig0=pathout+'_'.join(['zview','{VVV}',prefix,vinfo,tinfo,'idx{ZZZ}'])
 
 idxplot = [2,idxzi]
 
 keys = DATA.variables.keys()
 for key in keys:
     print('key ',key)
-    data = DATA[key]
+    data = tl.resiz(DATA[key])
+    print(data.shape)
     if len(data.shape)==3.:
         for idx in idxplot:
             dataplot = data[idx,:,:]
             title = key+' (z='+str(ALT[idx])+' km)'
-            namefig = namefig0.format(VVV=key,ZZZ=str(idx),TIME=prefix)
+            namefig = namefig0.format(VVV=key,ZZZ=str(idx))
             plot_figure(dataplot,xy,
                         var=key,
                         title=title,
