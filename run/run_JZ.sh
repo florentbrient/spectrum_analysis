@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J SPEC
+#SBATCH -J SPECI
 #SBATCH -N 1          # nodes number
 #SBATCH -n 1          # CPUs number (on all nodes) 
 ##SBATCH -q qos_cpu-t3
